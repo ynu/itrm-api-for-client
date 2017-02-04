@@ -28,7 +28,8 @@
     "extends": "airbnb-base"
   },
   "dependencies": {
-    "babel-runtime": "^6.11.6"
+    "babel-runtime": "^6.11.6",
+    "debug": "^2.6.0"
   },
   "devDependencies": {
     "babel-cli": "^6.16.0",
