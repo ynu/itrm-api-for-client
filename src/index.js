@@ -8,11 +8,10 @@
  */
 
 import 'babel-polyfill';
-
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
-import { host, port } from './config';
+import { host, port, cookieKey } from './config';
 import route from './route';
 
 const app = express();
@@ -20,7 +19,7 @@ const app = express();
 //
 // Register Node.js middleware
 // -----------------------------------------------------------------------------
-app.use(cookieParser('my cookie key'));
+app.use(cookieParser(cookieKey));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
