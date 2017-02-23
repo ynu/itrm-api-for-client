@@ -12,7 +12,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import { host, port, cookieKey } from './config';
-import route from './route';
+import controllers from './controllers';
 
 const app = express();
 
@@ -30,7 +30,7 @@ app.use(morgan('dev'));
 /*
 注册API
 */
-app.use('/route', route);
+app.use('/route', controllers.route);
 
 app.listen(port, () => {
   console.log(`The server is running at http://${host}/`);
