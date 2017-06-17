@@ -33,6 +33,7 @@ app.use(cors({
 }));
 
 const morgan = require('morgan');
+
 app.use(morgan('dev'));
 
 
@@ -46,6 +47,8 @@ MongoClient.connect(mongoUrl, (err, db) => {
   */
   app.use('/route', controllers.route);
   app.use('/websites', controllers.websites({ db }));
+  app.use('/departments', controllers.departments({ db }));
+  app.use('/persons', controllers.persons());
   app.listen(port, () => {
     console.log(`The server is running at http://${host}/`);
   });
