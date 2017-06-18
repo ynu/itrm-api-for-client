@@ -167,3 +167,22 @@ ITRM API for Client with cookie authentication
     - 未登录用户不能读取任何未被标记为公开的资源，或已公开资源的未公开数据字段；
     - 无特殊权限的登录用户仅能读取自己添加的资源数据；
     - 部门主要负责人和保密审查员可以查看本部门所有资源；
+
+## API
+被项目 API 主要提供给 aor 客户端使用，采用 SimpleREST 标准，因此，所有资源都必须具备以下 API：
+
+- `GET_LIST` 获取资源列表 `?sort=['title','ASC']&range=[0, 9]&filter={title:'bar'}` 
+    - sort 排序字段
+    - range 数据分页
+    - filter 过滤器 
+- `GET_ONE` 获取指定资源 `GET /:id`
+    - id 指定的资源ID。
+- `CREATE` 创建资源 `POST /`
+    - 所有提交的数据均在 BODY 中
+- `UPDATE` 更新资源 `PUT /:id`
+    - id 指定资源的 ID；
+    - 所有需要更新的数据均在 BODY 中。
+- `DELETE` 删除资源 `DELETE /:id`
+    - id 指定资源的 ID；
+- `GET_MANY` 批量获取资源 `GET ?filter={ids:[123,456,789]}`
+    - filter 过滤器 

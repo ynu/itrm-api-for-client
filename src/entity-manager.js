@@ -49,12 +49,19 @@ export default class EntityManager {
  * @param  {number} skip  =             0   跳过开头的结果
  * @return {Promise}       操作结果
  */
-  find({ query = {}, limit = 100, skip = 0 } = { query: {}, limit: 100, skip: 0 }) {
+  find(options) {
+    const { query, limit, skip, sort } = {
+      query: {},
+      limit: 100,
+      skip: 0,
+      sort: { _id: 1 },
+      ...options,
+    };
     return new Promise((resolve, reject) => this.useEntity(async (col) => {
       let result;
       try {
         info(`[EntityManager find][${col.collectionName}]query::`, JSON.stringify(query));
-        const cursor = col.find(query).skip(skip).limit(limit);
+        const cursor = col.find(query).sort(sort).skip(skip).limit(limit);
         result = await cursor.toArray();
         info('[EntityManager find]', col.collectionName, '::result.length::', result.length);
         resolve(result);

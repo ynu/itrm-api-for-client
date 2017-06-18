@@ -29,6 +29,7 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(cors({
   exposedHeaders: [
     'X-Total-Count',
+    'Content-Range',
   ],
 }));
 
@@ -47,7 +48,10 @@ MongoClient.connect(mongoUrl, (err, db) => {
   */
   app.use('/route', controllers.route);
   app.use('/websites', controllers.websites({ db }));
-  app.use('/departments', controllers.departments({ db }));
+  app.use('/departments', controllers.departments({
+    db,
+    routeName: 'departments',
+  }));
   app.use('/persons', controllers.persons());
   app.listen(port, () => {
     console.log(`The server is running at http://${host}/`);
