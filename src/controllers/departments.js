@@ -4,6 +4,7 @@
 
 import { Router } from 'express';
 // import { secret } from '../config';
+import { formatQuery, setContentRange } from '../middlewares/simple-rest';
 
 const { ObjectId } = require('mongodb');
 const DepartmentManager = require('../models/departments').default;
@@ -14,24 +15,19 @@ export default (options) => {
 
   const router = new Router();
 
-  router.get('/', async (req, res) => {
-    const { sort: [orderBy, direction], range, filter } = req.query;
-    const findOptions = {
-      sort: {
-        [orderBy]: direction === 'DESC' ? 1 : -1,
-      },
-      skip: parseInt(range[0]),
-      limit: parseInt(range[1]) - parseInt(range[0]) + 1,
-      query: {},
-    };
-    const data = await deptm.find(findOptions);
-    const count = await deptm.count(findOptions.query);
-    res.set('Content-Range', `${routeName} ${range[0]}-${range[1]}/${count}`);
-    res.json(data.map(item => ({
-      id: item._id,
-      ...item,
-    })));
-  });
+  router.get('/',
+    formatQuery(),
+    setContentRange({
+      resource: routeName,
+      getCount: () => deptm.count(),
+    }),
+    async (req, res) => {
+      const data = await deptm.find(req.mongoQuery);
+      res.json(data.map(({ _id, ...other }) => ({
+        id: _id,
+        ...other,
+      })));
+    });
 
   router.get('/:id', async (req, res) => {
     const id = new ObjectId(req.params.id);

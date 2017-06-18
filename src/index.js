@@ -44,15 +44,16 @@ MongoClient.connect(mongoUrl, (err, db) => {
     return;
   }
   /*
-  注册API
+  通过controlers 文件夹注册API
   */
-  app.use('/route', controllers.route);
-  app.use('/websites', controllers.websites({ db }));
-  app.use('/departments', controllers.departments({
-    db,
-    routeName: 'departments',
-  }));
-  app.use('/persons', controllers.persons());
+
+  Object.entries(controllers).forEach(([routeName, getRoute]) => {
+    app.use(`/${routeName}`, getRoute({
+      db,
+      routeName,
+    }));
+  });
+
   app.listen(port, () => {
     console.log(`The server is running at http://${host}/`);
   });
