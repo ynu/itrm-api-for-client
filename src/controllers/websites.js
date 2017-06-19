@@ -1,26 +1,31 @@
 /*
- eslint-disable no-param-reassign
+ eslint-disable no-param-reassign, no-underscore-dangle
 */
 
 import { Router } from 'express';
-import { secret } from '../config';
+// import { secret } from '../config';
+import { formatQuery, setContentRange } from '../middlewares/simple-rest';
 
 const { ObjectId } = require('mongodb');
 const WebSiteManager = require('../models/websites').default;
 
 export default (options) => {
-  const { db } = options;
+  const { db, routeName } = options;
   const wsm = new WebSiteManager(db);
 
   const router = new Router();
 
-  router.get('/', async (req, res) => {
-    const data = await wsm.find();
-    const count = await wsm.count();
-    res.set('X-Total-Count', count);
-    res.json(data.map(item => ({
-      id: item._id,
-      ...item,
+  router.get('/',
+    formatQuery(),
+    setContentRange({
+      resource: routeName,
+      getCount: () => wsm.count(),
+    }),
+  async (req, res) => {
+    const data = await wsm.find(req.mongoQuery);
+    res.json(data.map(({ _id, ...other }) => ({
+      id: _id,
+      ...other,
     })));
   });
 

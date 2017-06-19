@@ -48,6 +48,7 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(cors({
   exposedHeaders: [
     'X-Total-Count',
+    'Content-Range',
   ],
 }));
 
@@ -62,13 +63,15 @@ MongoClient.connect(mongoUrl, (err, db) => {
     return;
   }
   /*
-  注册API
+  通过controlers 文件夹注册API
   */
-  app.use('/route', controllers.route);
-  app.use('/websites', controllers.websites({ db }));
-  app.use('/departments', controllers.departments({ db }));
-  app.use('/persons', controllers.persons());
-  app.use('/auth', controllers.auth());
+  Object.entries(controllers).forEach(([routeName, getRoute]) => {
+    app.use(`/${routeName}`, getRoute({
+      db,
+      routeName,
+    }));
+  });
+
   app.listen(port, () => {
     console.log(`The server is running at http://${host}/`);
   });
