@@ -30,11 +30,13 @@
   "dependencies": {
     "babel-runtime": "^6.11.6",
     "body-parser": "^1.15.2",
+    "connect-cas": "^1.6.0",
     "cookie-parser": "^1.4.3",
     "cors": "^2.8.3",
     "debug": "^2.6.0",
     "express": "^4.14.0",
     "express-jwt": "^5.1.0",
+    "express-session": "^1.15.3",
     "mongo-use-collection": "^0.3.0",
     "mongodb": "^2.2.28",
     "morgan": "^1.7.0"
