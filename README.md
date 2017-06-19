@@ -43,6 +43,7 @@ ITRM API for Client with cookie authentication
     operator, // Person, 操作者
     resource,   // Resource, 被修改的资源
     note,    // 修改记录，例如"原名称xxx修改为yyy"
+    type,   // 类型，包括：create, delete, update,
 }
 ```
 
@@ -87,7 +88,7 @@ ITRM API for Client with cookie authentication
     dept: {},   // Department，所属部门，id 为必须字段，其余字段可选
     manager: {},    // Person 管理员，id 为必须字段
     i18nEdition: [{     // 网站国际化版本信息
-        language,   // 语言
+        language,   // 语言, ISO639代码，例如:en
         mainPageUrl,    // 首页
     }],
     creation,   // Creation, 数据创建信息
@@ -113,8 +114,9 @@ ITRM API for Client with cookie authentication
     account, // 微信号
     name, // 名称
     kbrq, // 开办日期
-    dept, // Department, 所属部门
-    cetification: {, // 认证情况
+    dept, // Department, 所属部门,
+    type, // 类型，包括：1 订阅号，2. 服务号，3. 企业号，4. 小程序
+    certification: {, // 认证情况
         dqrq, // Date, 到期日期
         zt, // 认证主体
     },
@@ -131,6 +133,7 @@ ITRM API for Client with cookie authentication
     name,   // 名称
     url,    // 地址
     manager, // Person, 管理员
+    kbrq, // Date 开办日期
     creation, // Creation 数据创建信息
     cetification: {, // 认证情况
         dqrq, // Date, 到期日期
@@ -147,9 +150,11 @@ ITRM API for Client with cookie authentication
     manager,    // 管理员
     yt, // 用途
     ktrq,   // 开通日期
+    dept,   // Department 所属部门
     creation,   // Creation, 数据创建信息
 }
 ```
+### Dashboard
 
 ## 系统角色
 为便于读资源进行管理和存取控制，系统内置以下角色：
