@@ -8,6 +8,7 @@ import { formatQuery, setContentRange } from '../middlewares/simple-rest';
 
 const { ObjectId } = require('mongodb');
 const WebSiteManager = require('../models/websites').default;
+const { generateCreation } = require('../middlewares/creation').default;
 
 export default (options) => {
   const { db, routeName } = options;
@@ -21,34 +22,69 @@ export default (options) => {
       resource: routeName,
       getCount: () => wsm.count(),
     }),
-  async (req, res) => {
-    const data = await wsm.find(req.mongoQuery);
-    res.json(data.map(({ _id, ...other }) => ({
-      id: _id,
-      ...other,
-    })));
-  });
+    async (req, res) => {
+      const data = await wsm.find(req.mongoQuery);
+      res.json(data.map(({ _id, ...other }) => ({
+        id: _id,
+        ...other,
+      })));
+    }
+  );
 
   router.get('/:id', async (req, res) => {
     const id = new ObjectId(req.params.id);
-    res.json(await wsm.findById(id));
-  });
-
-  router.post('/', async (req, res) => {
-    const id = await wsm.insert(req.body);
-    res.json({ id });
-  });
-
-  router.put('/:id', async (req, res) => {
-    const _id = new ObjectId(req.params.id);
-    const { domain, name } = req.body;
-    await wsm.updateById({
-      _id,
-      domain,
-      name,
+    const data = await wsm.findById(id);
+    res.json({
+      id,
+      ...data,
     });
-    res.json({ id: _id });
   });
+
+
+  // 创建数据
+  router.post('/',
+    // 规整数据
+    (req, res, next) => {
+      let { mainUrlPage } = req.body;
+      const { domain } = req.body;
+      if (!mainUrlPage) mainUrlPage = `http://${domain}`;
+      req.website = {
+        ...req.body,
+        mainUrlPage,
+      };
+      next();
+    },
+    generateCreation(),
+    async (req, res) => {
+      const id = await wsm.insert({
+        creation: req.creation,
+        ...req.website,
+      });
+      res.json({ id });
+    }
+  );
+
+  router.put('/:id',
+    // 规整数据
+    (req, res, next) => {
+      let { mainUrlPage } = req.body;
+      const { domain } = req.body;
+      if (!mainUrlPage) mainUrlPage = `http://${domain}`;
+      req.website = {
+        ...req.body,
+        mainUrlPage,
+      };
+      next();
+    },
+    async (req, res) => {
+      const _id = new ObjectId(req.params.id);
+      await wsm.updateById({
+        ...req.body,
+        _id,
+      });
+      res.json({ id: _id });
+    }
+  );
 
   router.delete('/:id', async(req, res) => {
     const id = new ObjectId(req.params.id);

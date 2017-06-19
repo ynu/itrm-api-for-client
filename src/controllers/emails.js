@@ -7,7 +7,8 @@ import { Router } from 'express';
 import { formatQuery, setContentRange } from '../middlewares/simple-rest';
 
 const { ObjectId } = require('mongodb');
-const EmailManager = require('../models/wechat-official-accounts').default;
+const EmailManager = require('../models/emails').default;
+const { generateCreation } = require('../middlewares/creation').default;
 
 export default (options) => {
   const { db, routeName } = options;
@@ -34,18 +35,21 @@ export default (options) => {
     res.json(await emailm.findById(id));
   });
 
-  router.post('/', async (req, res) => {
-    const id = await emailm.insert(req.body);
+  router.post('/',
+    generateCreation(),
+  async (req, res) => {
+    const id = await emailm.insert({
+      creation: req.creation,
+      ...req.body,
+    });
     res.json({ id });
   });
 
   router.put('/:id', async (req, res) => {
     const _id = new ObjectId(req.params.id);
-    const { domain, name } = req.body;
     await emailm.updateById({
+      ...req.body,
       _id,
-      domain,
-      name,
     });
     res.json({ id: _id });
   });

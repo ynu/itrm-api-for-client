@@ -7,7 +7,8 @@ import { Router } from 'express';
 import { formatQuery, setContentRange } from '../middlewares/simple-rest';
 
 const { ObjectId } = require('mongodb');
-const WeiboAccountManager = require('../models/wechat-official-accounts').default;
+const WeiboAccountManager = require('../models/weibo-accounts').default;
+const { generateCreation } = require('../middlewares/creation').default;
 
 export default (options) => {
   const { db, routeName } = options;
@@ -34,18 +35,22 @@ export default (options) => {
     res.json(await weibom.findById(id));
   });
 
-  router.post('/', async (req, res) => {
-    const id = await weibom.insert(req.body);
-    res.json({ id });
-  });
+  router.post('/',
+    generateCreation(),
+    async (req, res) => {
+      const id = await weibom.insert({
+        creation: req.creation,
+        ...req.body,
+      });
+      res.json({ id });
+    }
+  );
 
   router.put('/:id', async (req, res) => {
     const _id = new ObjectId(req.params.id);
-    const { domain, name } = req.body;
     await weibom.updateById({
+      ...req.body,
       _id,
-      domain,
-      name,
     });
     res.json({ id: _id });
   });

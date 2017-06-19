@@ -8,6 +8,7 @@ import { formatQuery, setContentRange } from '../middlewares/simple-rest';
 
 const { ObjectId } = require('mongodb');
 const DepartmentManager = require('../models/departments').default;
+const { generateCreation } = require('../middlewares/creation').default;
 
 export default (options) => {
   const { db, routeName } = options;
@@ -31,21 +32,29 @@ export default (options) => {
 
   router.get('/:id', async (req, res) => {
     const id = new ObjectId(req.params.id);
-    res.json(await deptm.findById(id));
+    const data = await deptm.findById(id);
+    res.json({
+      id,
+      ...data,
+    });
   });
 
-  router.post('/', async (req, res) => {
-    const id = await deptm.insert(req.body);
+  router.post('/',
+    generateCreation(),
+  async (req, res) => {
+    const id = await deptm.insert({
+      creation: req.creation,
+      ...req.body,
+    });
     res.json({ id });
-  });
+  }
+  );
 
   router.put('/:id', async (req, res) => {
     const _id = new ObjectId(req.params.id);
-    const { domain, name } = req.body;
     await deptm.updateById({
+      ...req.body,
       _id,
-      domain,
-      name,
     });
     res.json({ id: _id });
   });
