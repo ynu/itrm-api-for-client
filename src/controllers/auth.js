@@ -4,6 +4,7 @@
 
 import { Router } from 'express';
 import cas from 'connect-cas';
+import url from 'url';
 
 export default (options) => {
 
@@ -21,6 +22,28 @@ export default (options) => {
       user = req.session.cas.user;
     }
     res.redirect(301, redirect_uri);
+    // res.json({cas: req.session.cas});
+  });
+
+  router.get('/logout', async (req, res) => {
+    if (req.session.destroy) {
+      req.session.destroy();
+    } else {
+      req.session = null;
+    }
+    // return res.json({message: 'ok'});
+    var options = cas.configure();
+    console.info("options", options);
+    options.pathname = options.paths.logout;
+    return res.redirect(url.format(options));
+  });
+
+  router.get('/user', async (req, res) => {
+    let user = null;
+    if (req.session.cas && req.session.cas.user) {
+      user = req.session.cas.user;
+    }
+    res.json({username: user});
   });
 
 
