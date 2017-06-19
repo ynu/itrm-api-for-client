@@ -1,4 +1,4 @@
-const EntityManager = require('../entity-manager').default;
+const EntityManager = require('entity-manager').default;
 
 export default class DepartmentManager extends EntityManager {
   constructor(db, collectionName = 'departments') {
