@@ -46,16 +46,20 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(cors({
+  origin: true,
   exposedHeaders: [
     'X-Total-Count',
     'Content-Range',
   ],
+  credentials: true
 }));
 
 const morgan = require('morgan');
 
 app.use(morgan('dev'));
 
+// https://github.com/expressjs/cors
+app.options('*', cors()) // include before other routes
 
 MongoClient.connect(mongoUrl, (err, db) => {
   if (err) {
