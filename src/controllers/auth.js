@@ -5,6 +5,7 @@
 import { Router } from 'express';
 import cas from 'connect-cas';
 import url from 'url';
+import {webCallbackUrl, casServiceUrl} from '../config'
 
 export default (options) => {
   const router = new Router();
@@ -14,7 +15,7 @@ export default (options) => {
   // cas.authenticate()           : request an authentication if the user is not authenticated
   router.get('/', cas.ssout('/auth'), cas.serviceValidate(), cas.authenticate(), async (req, res) => {
     // 从query中获取客户端回调url
-    const redirect_uri = req.query.redirect_uri || 'http://itrs-web.itrm.ynu.edu.cn:3000/callback';
+    const redirect_uri = req.query.redirect_uri || webCallbackUrl;
     // 从cas的成功回调中获取用户基本信息
     let user = null;
     if (req.session.cas && req.session.cas.user) {
@@ -33,8 +34,17 @@ export default (options) => {
     // return res.json({message: 'ok'});
     const options = cas.configure();
     console.info('options', options);
-    options.pathname = options.paths.logout;
-    return res.redirect(url.format(options));
+    const casAuthLogoutUrl = `${options.protocol}://${options.host}${options.paths.logout}?service=${casServiceUrl}`;
+    console.info('casAuthLogoutUrl', casAuthLogoutUrl);
+    // options.pathname = options.paths.logout;
+    // return res.redirect(url.format(options));
+    return res.send(`
+          <html>
+            <head>
+              <meta http-equiv="refresh" content="0; url=${casAuthLogoutUrl}" />
+            </head>
+          </html>
+        `);
   });
 
   router.get('/user', async (req, res) => {
