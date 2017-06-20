@@ -6,9 +6,11 @@ import { Router } from 'express';
 // import { secret } from '../config';
 import { formatQuery, setContentRange } from '../middlewares/simple-rest';
 
-const { ObjectId } = require('mongodb');
+// const { ObjectId } = require('mongodb');
 const DepartmentManager = require('../models/departments').default;
 const { generateCreation } = require('../middlewares/creation').default;
+const { currentUser } = require('../middlewares/auth').default;
+const { list, totalCount, getById, updateById, deleteById } = require('../middlewares/departments');
 
 export default (options) => {
   const { db, routeName } = options;
@@ -17,29 +19,29 @@ export default (options) => {
   const router = new Router();
 
   router.get('/',
+    currentUser(),
     formatQuery(),
+    list({ db }),
+    totalCount({ db }),
     setContentRange({
       resource: routeName,
-      getCount: () => deptm.count(),
+      getCount: req => req.departments.totalCount,
     }),
-    async (req, res) => {
-      const data = await deptm.find(req.mongoQuery);
+    (req, res) => {
+      const data = req.departments.list;
       res.json(data.map(({ _id, ...other }) => ({
         id: _id,
         ...other,
       })));
     });
 
-  router.get('/:id', async (req, res) => {
-    const id = new ObjectId(req.params.id);
-    const data = await deptm.findById(id);
-    res.json({
-      id,
-      ...data,
-    });
-  });
+  router.get('/:id',
+    currentUser(),
+    getById({ db }),
+  );
 
   router.post('/',
+    currentUser(),
     generateCreation(),
   async (req, res) => {
     const id = await deptm.insert({
@@ -50,20 +52,15 @@ export default (options) => {
   }
   );
 
-  router.put('/:id', async (req, res) => {
-    const _id = new ObjectId(req.params.id);
-    await deptm.updateById({
-      ...req.body,
-      _id,
-    });
-    res.json({ id: _id });
-  });
+  router.put('/:id',
+    currentUser(),
+    updateById({ db }),
+  );
 
-  router.delete('/:id', async(req, res) => {
-    const id = new ObjectId(req.params.id);
-    await deptm.removeById(id);
-    res.json({ id });
-  });
+  router.delete('/:id',
+    currentUser(),
+    deleteById({ db }),
+  );
 
 
   return router;
