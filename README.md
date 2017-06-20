@@ -155,6 +155,28 @@ ITRM API for Client with cookie authentication
 }
 ```
 ### Dashboard
+提供首页显示的数据
+
+```javascript
+{
+    departments: {  // 部门数据
+        totalCount, // 总数
+    }
+    websites: { // 网站数据
+        totalCount,     // 总数 
+    },
+    wechatOfficialAccounts: {   // 微信公众号
+        totalCount,
+    },
+    weiboAccounts: {    // 微博账号
+        totalCount,
+    },
+    emails: {   // 公共邮箱
+        totalCount,
+    }
+}
+```
+
 
 ## 系统角色
 为便于读资源进行管理和存取控制，系统内置以下角色：
