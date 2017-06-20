@@ -9,7 +9,7 @@ const wsm = require('../middlewares/websites').default;
 const woam = require('../middlewares/wechat-official-accounts').default;
 const weibom = require('../middlewares/weibo-accounts').default;
 const emailm = require('../middlewares/emails').default;
-
+const auth = require('../middlewares/auth').default;
 
 export default (options) => {
   const { db } = options;
@@ -17,6 +17,7 @@ export default (options) => {
   const router = new Router();
 
   router.get('/',
+    auth.currentUser(),
     deptm.totalCount({ db }),
     wsm.totalCount({ db }),
     woam.totalCount({ db }),

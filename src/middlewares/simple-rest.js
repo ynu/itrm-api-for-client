@@ -14,7 +14,9 @@ export const formatQuery = ({
   handleFilter,
 } = {}) => (req, res, next) => {
   handleFilter = handleFilter || (() => ({}));
-  const { sort: [orderBy, direction], range, filter } = req.query;
+  const { filter } = req.query;
+  const range = JSON.parse(req.query.range);
+  const [orderBy, direction] = JSON.parse(req.query.sort);
   req.mongoQuery = {
     sort: {
       [orderBy]: direction === 'DESC' ? 1 : -1,
@@ -30,7 +32,7 @@ export const setContentRange = ({
   resource,
   getCount,
 } = {}) => async (req, res, next) => {
-  let [start, end] = req.query.range;
+  let [start, end] = JSON.parse(req.query.range);
   start = parseInt(start, 10);
   end = parseInt(end, 10);
   const count = await getCount(req, res);
