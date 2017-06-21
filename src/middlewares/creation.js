@@ -3,7 +3,7 @@
 生成创建信息
 */
 const generateCreation = (options = {}) => (req, res, next) => {
-  const getCreator = options.getCreator || (req2 => req2.user || {});
+  const getCreator = options.getCreator || (req2 => ({ id: req2.user.user }) || {});
   const success = options.success || ((creation, req2, res2, next2) => {
     req2.creation = creation;
     next2();

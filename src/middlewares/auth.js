@@ -23,6 +23,7 @@ export const currentUser = (options = {}) => async (req, res, next) => {
   const fail = options.fail || ((err, req2, res2) => res2.status(401).send(err.message));
   if (req.session.cas && req.session.cas.user) {
     const user = req.session.cas;
+    user.id = req.session.cas.user;
     if (db) {
       const uirm = new UsersInRoles(db);
       const roles = await uirm.rolesByUserId(appId, req.session.cas.user);

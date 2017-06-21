@@ -15,8 +15,8 @@ export const formatQuery = ({
 } = {}) => (req, res, next) => {
   handleFilter = handleFilter || (() => ({}));
   const { filter } = req.query;
-  const range = JSON.parse(req.query.range);
-  const [orderBy, direction] = JSON.parse(req.query.sort);
+  const range = req.query.range ? JSON.parse(req.query.range) : [0, 10];
+  const [orderBy, direction] = req.query.sort ? JSON.parse(req.query.sort) : ['id', 'DESC'];
   req.mongoQuery = {
     sort: {
       [orderBy]: direction === 'DESC' ? 1 : -1,
@@ -25,6 +25,7 @@ export const formatQuery = ({
     limit: (parseInt(range[1], 10) - parseInt(range[0], 10)) + 1,
     query: handleFilter(filter),
   };
+  console.log('dd', req.mongoQuery);
   next();
 };
 
@@ -32,7 +33,7 @@ export const setContentRange = ({
   resource,
   getCount,
 } = {}) => async (req, res, next) => {
-  let [start, end] = JSON.parse(req.query.range);
+  let [start, end] = req.query.range ? JSON.parse(req.query.range) : [0, 9];
   start = parseInt(start, 10);
   end = parseInt(end, 10);
   const count = await getCount(req, res);

@@ -1,4 +1,4 @@
-import { sysRoles } from '../config';
+import { sysRoles, info } from '../config';
 
 const { ObjectId } = require('mongodb');
 const DepartmentManager = require('../models/departments').default;
@@ -6,8 +6,9 @@ const DepartmentManager = require('../models/departments').default;
 export const totalCount = (options = {
   entityManger: DepartmentManager,
   dataName: 'departments',
-  whereQueryOrFields: ['zyfzr.id', 'bmscy.id', 'creation.creator.id'] }) => async (req, res, next) => {
+  whereQueryOrFields: [] }) => async (req, res, next) => {
     const db = options.db;
+    const whereQueryOrFields = options.whereQueryOrFields || [];
     const getQuery = options.getQuery || (req2 => req2.mongoQuery);
     const getCurrentUserId = options.getCurrentUserId || (req2 => req2.user.id);
     const success = options.success || ((count, req2, res2, next2) => {
@@ -22,12 +23,12 @@ export const totalCount = (options = {
     const userId = getCurrentUserId(req);
 
     // 根据用户角色及id进行查询过滤
-    const orOptions = options.whereQueryOrFields.map(field => ({ [field]: userId }));
-    const query = req.user.roles.includes(sysRoles.admin) ?
-      queryOptions.query : {
-        ...queryOptions.query,
-        $or: orOptions,
-      };
+    const orOptions = whereQueryOrFields.map(field => ({ [field]: userId }));
+    const query = queryOptions.query;
+    if (orOptions.length) {
+      query.$or = orOptions;
+    }
+    info('totalCount query:', query);
     const count = await entityManger.count(query);
     success(count, req, res, next);
   };
@@ -37,6 +38,7 @@ export const list = (options = {
   dataName: 'departments',
   whereQueryOrFields: ['zyfzr.id', 'bmscy.id', 'creation.creator.id'] }) => async (req, res, next) => {
     const db = options.db;
+    const whereQueryOrFields = options.whereQueryOrFields || [];
     const getQuery = options.getQuery || (req2 => req2.mongoQuery);
     const getCurrentUserId = options.getCurrentUserId || (req2 => req2.user.id);
     const success = options.success || ((data, req2, res2, next2) => {
@@ -49,13 +51,14 @@ export const list = (options = {
     const entityManger = new options.entityManger(db);
     const queryOptions = getQuery(req);
     const userId = getCurrentUserId(req);
-    const orOptions = options.whereQueryOrFields.map(field => ({ [field]: userId }));
+    const orOptions = whereQueryOrFields.map(field => ({ [field]: userId }));
+    const query = queryOptions.query;
+    if (orOptions.length) {
+      query.$or = orOptions;
+    }
     const data = await entityManger.find({
       ...queryOptions,
-      query: {
-        ...queryOptions.query,
-        $or: orOptions,
-      },
+      query,
     });
     console.log(JSON.stringify({
       ...queryOptions,
