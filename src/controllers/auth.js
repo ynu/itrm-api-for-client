@@ -34,7 +34,7 @@ export default (options) => {
     // return res.json({message: 'ok'});
     const options = cas.configure();
     console.info('options', options);
-    const casAuthLogoutUrl = `${options.protocol}://${options.host}${options.paths.logout}?service=${casServiceUrl}`;
+    const casAuthLogoutUrl = `${options.protocol}://${options.host}${options.paths.logout}`;
     console.info('casAuthLogoutUrl', casAuthLogoutUrl);
     // options.pathname = options.paths.logout;
     // return res.redirect(url.format(options));
