@@ -3,10 +3,8 @@
 */
 
 import { Router } from 'express';
-// import { secret } from '../config';
 import { formatQuery, setContentRange } from '../middlewares/simple-rest';
 
-// const { ObjectId } = require('mongodb');
 const DepartmentManager = require('../models/departments').default;
 const { generateCreation } = require('../middlewares/creation').default;
 const { currentUser } = require('../middlewares/auth').default;
@@ -19,7 +17,7 @@ export default (options) => {
   const router = new Router();
 
   router.get('/',
-    currentUser(),
+    currentUser({ db }),
     formatQuery(),
     list({ db }),
     totalCount({ db }),

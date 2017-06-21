@@ -24,8 +24,8 @@ cas.configure({
     validate: '/authserver/validate',
     serviceValidate: '/authserver/serviceValidate',
     login: '/authserver/login',
-    logout: '/authserver/logout'
-  }
+    logout: '/authserver/logout',
+  },
 });
 
 const cors = require('cors');
@@ -40,7 +40,7 @@ app.use(cookieParser(cookieKey));
 app.use(session({
   secret: sessionSecret,
   resave: true,
-  saveUninitialized: true
+  saveUninitialized: true,
 }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ limit: '50mb' }));
@@ -51,7 +51,7 @@ app.use(cors({
     'X-Total-Count',
     'Content-Range',
   ],
-  credentials: true
+  credentials: true,
 }));
 
 const morgan = require('morgan');
@@ -59,7 +59,7 @@ const morgan = require('morgan');
 app.use(morgan('dev'));
 
 // https://github.com/expressjs/cors
-app.options('*', cors()) // include before other routes
+app.options('*', cors()); // include before other routes
 
 MongoClient.connect(mongoUrl, (err, db) => {
   if (err) {

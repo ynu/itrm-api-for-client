@@ -113,4 +113,8 @@ export default class UserInRole extends EntityManager {
     info('usersByUserId: ', query);
     return super.findOne({ query });
   }
+  async rolesByUserId(appId, userId) {
+    const user = (await this.userByUserId(appId, userId)) || {};
+    return user.roles || [];
+  }
 }
