@@ -34,6 +34,16 @@ export const deleteById = (options = {}) => {
   return deleteByIdCommon(mergedOptions);
 };
 
+export const collectData = (options = {}) => async (req, res, next) => {
+  req.data = {};
+  req.data.department = req.departments.list[0];
+  req.data.websites = req.websites.list;
+  req.data.weixins = req.wechatOfficialAccounts.list;
+  req.data.weibos = req.weiboAccounts.list;
+  req.data.emails = req.emails.list;
+  next();
+};
+
 export default {
   totalCount,
   list,

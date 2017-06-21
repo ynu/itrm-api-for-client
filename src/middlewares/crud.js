@@ -93,15 +93,20 @@ export const list = (options = {
     success(data, req, res, next);
   };
 
-const checkOrFields = whereCheckOrFields => whereCheckOrFields.some((entry) => {
-  let dataCheck = data;
-  entry.forEach((field) => {
-    if (dataCheck) {
-      dataCheck = dataCheck[field];
-    }
+const checkOrFields = (whereCheckOrFields, data, userId) => {
+  if (!whereCheckOrFields) {
+    return true;
+  }
+  return whereCheckOrFields.some((entry) => {
+    let dataCheck = data;
+    entry.forEach((field) => {
+      if (dataCheck) {
+        dataCheck = dataCheck[field];
+      }
+    });
+    return dataCheck === userId;
   });
-  return dataCheck === userId;
-});
+};
 
 export const getById = (options = {
   entityManger: DepartmentManager,
@@ -120,7 +125,7 @@ export const getById = (options = {
     const id = new ObjectId(getId(req));
     const userId = getCurrentUserId(req);
     const data = await entityManger.findById(id);
-    const check = checkOrFields(options.whereCheckOrFields);
+    ;const check = checkOrFields(whereCheckOrFields, data, userId);
     if (data && check) {
       success(data, req, res, next);
     } else fail(new Error('当前用户没有权限'), req, res, next);
@@ -145,7 +150,7 @@ export const updateById = (options = {
     const userId = getCurrentUserId(req);
     const newData = getData(req);
     const data = await deptm.findById(_id);
-    const check = checkOrFields(options.whereCheckOrFields);
+    ;const check = checkOrFields(whereCheckOrFields, data, userId);
     if (data && check) {
       await deptm.updateById({
         ...newData,
@@ -172,7 +177,7 @@ export const deleteById = (options = {
     const id = new ObjectId(getId(req));
     const userId = getCurrentUserId(req);
     const data = await deptm.findById(id);
-    const check = checkOrFields(options.whereCheckOrFields);
+    ;const check = checkOrFields(whereCheckOrFields, data, userId);
     if (data && check) {
       await deptm.removeById(id);
       success(id, req, res, next);

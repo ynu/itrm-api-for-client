@@ -4,11 +4,17 @@
 
 import { Router } from 'express';
 import { formatQuery, setContentRange } from '../middlewares/simple-rest';
+import { generateDocx, sampleData } from '../middlewares/utils';
 
-const AqzrManager = require('../models/aqzr').default;
-const { generateCreation } = require('../middlewares/creation').default;
-const { currentUser } = require('../middlewares/auth').default;
-const { list, totalCount, getById, updateById, deleteById } = require('../middlewares/aqzr');
+import AqzrManager from '../models/aqzr';
+import { generateCreation } from '../middlewares/creation';
+import { currentUser } from '../middlewares/auth';
+import { list, totalCount, getById, updateById, deleteById, collectData } from '../middlewares/aqzr';
+import { getById as getByIdDepartment, list as listDepartment } from '../middlewares/departments';
+import { list as listWebsite } from '../middlewares/websites';
+import { list as listWechat } from '../middlewares/wechat-official-accounts';
+import { list as listWeibo } from '../middlewares/weibo-accounts';
+import { list as listEmail } from '../middlewares/emails';
 
 export default (options) => {
   const { db, routeName } = options;
@@ -36,6 +42,19 @@ export default (options) => {
   router.get('/:id',
     currentUser(),
     getById({ db }),
+  );
+
+  router.get('/:id/docx',
+    currentUser(),
+    formatQuery(),
+    listDepartment({ db }),
+    listWebsite({ db }),
+    listWechat({ db }),
+    listWeibo({ db }),
+    listEmail({ db }),
+    collectData(),
+    // 可以使用{ data: sampleData }测试
+    generateDocx(),
   );
 
   router.post('/',
