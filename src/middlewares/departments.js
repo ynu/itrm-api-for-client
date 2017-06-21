@@ -10,32 +10,35 @@ const defaultOptions = {
   whereCheckOrFields: [['bmscy', 'id'], ['creation', 'creator', 'id']],
 };
 
-export const totalCount = (options = {}) => {
-  const mergedOptions = Object.assign({}, defaultOptions, options);
-  return totalCountCommon(mergedOptions);
-};
+export const totalCount = (options = {}) => totalCountCommon({
+  ...defaultOptions,
+  ...options,
+});
 
 export const list = (options = {}) => {
   const mergedOptions = Object.assign({}, defaultOptions, options);
   return listCommon(mergedOptions);
 };
 
-export const getById = (options = {}) => {
-  const mergedOptions = Object.assign({}, defaultOptions, options);
-  return getByIdCommon(mergedOptions);
-};
+export const getById = (options = {}) => getByIdCommon({
+  ...defaultOptions,
+  ...options,
+});
 
-export const updateById = (options = {}) => {
-  const mergedOptions = Object.assign({}, defaultOptions, options);
-  return updateByIdCommon(mergedOptions);
-};
+export const updateById = (options = {}) => updateByIdCommon({
+  ...defaultOptions,
+  ...options,
+});
 
-export const deleteById = (options = {}) => {
-  const mergedOptions = Object.assign({}, defaultOptions, options);
-  return deleteByIdCommon(mergedOptions);
-};
+export const deleteById = (options = {}) => deleteByIdCommon({
+  ...defaultOptions,
+  ...options,
+});
 
 export default {
   totalCount,
   list,
+  getById,
+  updateById,
+  deleteById,
 };
