@@ -70,6 +70,7 @@ ITRM API for Client with cookie authentication
     name,               // 单位名称
     zyfzr: {},  // Person, 主要负责人
     bmscy: {},              // Person, 保密审查员
+    manager: {},    // Person 当前记录管理员
     resManagers: [{}],  // Person数组，资源管理员列表       
 }
 ```
@@ -174,6 +175,25 @@ ITRM API for Client with cookie authentication
     emails: {   // 公共邮箱
         totalCount,
     }
+}
+```
+
+### 安全责任(aqzr)
+```javascript
+{
+    dept, // Department 填报部门
+    zrqj: {     // 责任期间
+        startDate,  // 开始时间
+        endDate,    // 结束时间
+    },
+    pre_jcjg: {     // 上一个责任期间检查结果检查结果
+        ... // 自定义数据
+    },
+    jcjg: {     // 本责任期间检查结果
+        ... // 自定义结果
+    },
+    creation: // Creation 创建信息
+    manager: // Person 管理员
 }
 ```
 

@@ -6,6 +6,8 @@ const weiboAccounts = require('./weibo-accounts').default;
 const emails = require('./emails').default;
 const auth = require('./auth').default;
 const dashboard = require('./dashboard').default;
+const aqzr = require('./aqzr').default;
+
 
 export default {
   websites,
@@ -16,4 +18,5 @@ export default {
   emails,
   auth,
   dashboard,
+  aqzr,
 };
