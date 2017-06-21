@@ -81,3 +81,50 @@ MongoClient.connect(mongoUrl, (err, db) => {
   });
 });
 
+
+// error handling, see http://expressjs.com/en/guide/error-handling.html and
+// https://derickbailey.com/2014/09/06/proper-error-handling-in-expressjs-route-handlers/
+
+// development error handler
+// will print stacktrace
+if (app.get('env') === 'development') {
+
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.json({
+      message: err.message,
+      error: err
+    });
+  });
+
+
+  // see https://github.com/nwjs/nw.js/issues/1699#issuecomment-84861481
+  process.on('uncaughtException', function(e){
+    console.group('Node uncaughtException');
+    if(!!e.message){
+      console.log(e.message);
+    }
+    if(!!e.stack){
+      console.log(e.stack);
+    }
+    console.log(e);
+    console.groupEnd();
+  });
+  process.on('unhandledRejection', error => {
+    console.group('Node unhandledRejection');
+    console.log('unhandledRejection', error);
+    console.groupEnd();
+  });
+
+}
+
+// production error handler
+// no stacktraces leaked to user
+app.use(function(err, req, res, next) {
+  res.status(err.status || 500);
+  res.render('error', {
+    message: err.message,
+    error: {}
+  });
+});
+
