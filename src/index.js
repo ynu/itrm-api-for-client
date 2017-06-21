@@ -99,20 +99,20 @@ if (app.get('env') === 'development') {
 
 
   // see https://github.com/nwjs/nw.js/issues/1699#issuecomment-84861481
-  process.on('uncaughtException', function(e){
+  // see https://nodejs.org/api/process.html
+  process.on('uncaughtException', (error) => {
     console.group('Node uncaughtException');
-    if(!!e.message){
-      console.log(e.message);
-    }
-    if(!!e.stack){
-      console.log(e.stack);
-    }
-    console.log(e);
+    console.log('uncaughtException', error);
     console.groupEnd();
   });
   process.on('unhandledRejection', error => {
     console.group('Node unhandledRejection');
     console.log('unhandledRejection', error);
+    console.groupEnd();
+  });
+  process.on('rejectionHandled', error => {
+    console.group('Node rejectionHandled');
+    console.log('rejectionHandled', error);
     console.groupEnd();
   });
 
