@@ -3,13 +3,17 @@ import { sysRoles, info } from '../config';
 const { ObjectId } = require('mongodb');
 const DepartmentManager = require('../models/departments').default;
 
+const defaultGetQuery = req => (req.mongoQuery || {
+  query: {},
+});
+
 export const totalCount = (options = {
   entityManger: DepartmentManager,
   dataName: 'departments',
   whereQueryOrFields: [] }) => async (req, res, next) => {
     const db = options.db;
     const whereQueryOrFields = options.whereQueryOrFields || [];
-    const getQuery = options.getQuery || (req2 => req2.mongoQuery);
+    const getQuery = options.getQuery || defaultGetQuery;
     const getCurrentUserId = options.getCurrentUserId || (req2 => req2.user.id);
     const success = options.success || ((count, req2, res2, next2) => {
       req2[options.dataName] = {
@@ -39,7 +43,7 @@ export const list = (options = {
   whereQueryOrFields: ['zyfzr.id', 'bmscy.id', 'creation.creator.id'] }) => async (req, res, next) => {
     const db = options.db;
     const whereQueryOrFields = options.whereQueryOrFields || [];
-    const getQuery = options.getQuery || (req2 => req2.mongoQuery);
+    const getQuery = options.getQuery || defaultGetQuery;
     const getCurrentUserId = options.getCurrentUserId || (req2 => req2.user.id);
     const success = options.success || ((data, req2, res2, next2) => {
       req2[options.dataName] = {
