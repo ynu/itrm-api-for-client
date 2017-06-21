@@ -125,7 +125,7 @@ export const getById = (options = {
     const id = new ObjectId(getId(req));
     const userId = getCurrentUserId(req);
     const data = await entityManger.findById(id);
-    ;const check = checkOrFields(whereCheckOrFields, data, userId);
+    const check = checkOrFields(whereCheckOrFields, data, userId);
     if (data && check) {
       success(data, req, res, next);
     } else fail(new Error('当前用户没有权限'), req, res, next);
@@ -150,7 +150,7 @@ export const updateById = (options = {
     const userId = getCurrentUserId(req);
     const newData = getData(req);
     const data = await deptm.findById(_id);
-    ;const check = checkOrFields(whereCheckOrFields, data, userId);
+    const check = checkOrFields(whereCheckOrFields, data, userId);
     if (data && check) {
       await deptm.updateById({
         ...newData,
@@ -177,7 +177,7 @@ export const deleteById = (options = {
     const id = new ObjectId(getId(req));
     const userId = getCurrentUserId(req);
     const data = await deptm.findById(id);
-    ;const check = checkOrFields(whereCheckOrFields, data, userId);
+    const check = checkOrFields(whereCheckOrFields, data, userId);
     if (data && check) {
       await deptm.removeById(id);
       success(id, req, res, next);
