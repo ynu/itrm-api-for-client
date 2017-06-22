@@ -9,3 +9,5 @@ services:
       - db
   db:
     image: mongo:3.5
+    volumes:
+      - ./data:/data/db
