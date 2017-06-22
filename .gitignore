@@ -9,3 +9,6 @@ npm-debug.log
 .vscode
 .idea
 package-lock.json
+
+# https://docs.docker.com/compose/environment-variables/#the-env-file
+.env
