@@ -6,9 +6,9 @@ import { Router } from 'express';
 // import { secret } from '../config';
 import { formatQuery, setContentRange } from '../middlewares/simple-rest';
 
-const { ObjectId } = require('mongodb');
-const WeiboAccountManager = require('../models/weibo-accounts').default;
-const { generateCreation } = require('../middlewares/creation').default;
+import { ObjectId } from 'mongodb';
+import WeiboAccountManager from '../models/weibo-accounts';
+import { generateCreation } from '../middlewares/creation';
 
 export default (options) => {
   const { db, routeName } = options;

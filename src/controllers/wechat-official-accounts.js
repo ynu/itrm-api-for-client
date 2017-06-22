@@ -6,9 +6,9 @@ import { Router } from 'express';
 // import { secret } from '../config';
 import { formatQuery, setContentRange } from '../middlewares/simple-rest';
 
-const { ObjectId } = require('mongodb');
-const WeChatOfficialAccountManager = require('../models/wechat-official-accounts').default;
-const { generateCreation } = require('../middlewares/creation').default;
+import { ObjectId } from 'mongodb';
+import WeChatOfficialAccountManager from '../models/wechat-official-accounts';
+import { generateCreation } from '../middlewares/creation';
 
 export default (options) => {
   const { db, routeName } = options;

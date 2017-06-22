@@ -4,12 +4,12 @@
 
 import { Router } from 'express';
 
-const deptm = require('../middlewares/departments').default;
-const wsm = require('../middlewares/websites').default;
-const woam = require('../middlewares/wechat-official-accounts').default;
-const weibom = require('../middlewares/weibo-accounts').default;
-const emailm = require('../middlewares/emails').default;
-const auth = require('../middlewares/auth').default;
+import deptm from '../middlewares/departments';
+import wsm from '../middlewares/websites';
+import woam from '../middlewares/wechat-official-accounts';
+import weibom from '../middlewares/weibo-accounts';
+import emailm from '../middlewares/emails';
+import auth from '../middlewares/auth';
 
 export default (options) => {
   const { db } = options;
