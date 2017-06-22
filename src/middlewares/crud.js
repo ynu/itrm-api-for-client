@@ -113,6 +113,7 @@ export const getById = (options = {
   dataName: 'departments',
   whereCheckOrFields: [['zyfzr', 'id'], ['bmscy', 'id'], ['creation', 'creator', 'id']] }) => async (req, res, next) => {
     const db = options.db;
+    const whereCheckOrFields = options.whereCheckOrFields || [];
     const getId = options.getId || (req2 => req2.params.id);
     const getCurrentUserId = options.getCurrentUserId || (req2 => req2.user.id);
     const success = options.success || ((data, req2, res2) => {
@@ -136,6 +137,7 @@ export const updateById = (options = {
   dataName: 'departments',
   whereCheckOrFields: [['zyfzr', 'id'], ['bmscy', 'id'], ['creation', 'creator', 'id']] }) => async (req, res, next) => {
     const db = options.db;
+    const whereCheckOrFields = options.whereCheckOrFields || [];
     const getId = options.getId || (req2 => req2.params.id);
     const getData = options.getData || (req2 => req2.body);
     const getCurrentUserId = options.getCurrentUserId || (req2 => req2.user.id);
@@ -165,6 +167,7 @@ export const deleteById = (options = {
   dataName: 'departments',
   whereCheckOrFields: [['zyfzr', 'id'], ['bmscy', 'id'], ['creation', 'creator', 'id']] }) => async (req, res, next) => {
     const db = options.db;
+    const whereCheckOrFields = options.whereCheckOrFields || [];
     const getId = options.getId || (req2 => req2.params.id);
     const getCurrentUserId = options.getCurrentUserId || (req2 => req2.user.id);
     const success = options.success || ((id, req2, res2) => {
