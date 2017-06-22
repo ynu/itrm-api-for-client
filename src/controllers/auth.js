@@ -25,6 +25,10 @@ export default (options) => {
     // res.json({cas: req.session.cas});
   });
 
+  route.get('/test', async (req, res) => {
+    res.json({webCallbackUrl, casServiceUrl});
+  });
+
   router.get('/logout', async (req, res) => {
     if (req.session.destroy) {
       req.session.destroy();
@@ -38,7 +42,7 @@ export default (options) => {
     console.info('casAuthLogoutUrl', casAuthLogoutUrl);
     // options.pathname = options.paths.logout;
     // return res.redirect(url.format(options));
-    return res.send(`
+    res.send(`
           <html>
             <head>
               <meta http-equiv="refresh" content="0; url=${casAuthLogoutUrl}" />
