@@ -22,7 +22,7 @@ UserInRole
 
 import { info } from '../config';
 
-const EntityManager = require('entity-manager').default;
+import EntityManager from 'entity-manager';
 
 export default class UserInRole extends EntityManager {
   constructor(db, collectionName = 'users_in_roles') {

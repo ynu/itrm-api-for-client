@@ -4,7 +4,7 @@ import { createMocks } from 'node-mocks-http';
 import { currentUser, signin, signout } from '../src/middlewares/auth';
 import { secret } from '../src/config';
 
-const signature = require('cookie-signature');
+import signature from 'cookie-signature';
 
 describe('auth', () => {
 

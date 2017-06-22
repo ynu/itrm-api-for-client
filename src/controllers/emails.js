@@ -6,9 +6,9 @@ import { Router } from 'express';
 // import { secret } from '../config';
 import { formatQuery, setContentRange } from '../middlewares/simple-rest';
 
-const { ObjectId } = require('mongodb');
-const EmailManager = require('../models/emails').default;
-const { generateCreation } = require('../middlewares/creation').default;
+import { ObjectId } from 'mongodb';
+import EmailManager from '../models/emails';
+import { generateCreation } from '../middlewares/creation';
 
 export default (options) => {
   const { db, routeName } = options;
