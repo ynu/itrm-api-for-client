@@ -20,8 +20,27 @@ export default (options) => {
   router.get('/',
     currentUser({ db }),
     formatQuery(),
-    list({ db }),
-    totalCount({ db }),
+    // 添加权限过滤
+    // 一条记录的查询条件仅限于：创建者、主要负责人、保密审查员。
+    (req, res, next) => {
+      const userId = req.user.id;
+      req.queryFilter = {
+        $or: [
+            { 'creation.creator.id': userId },
+            { 'zyfzr.id': userId },
+            { 'bmscy.id': userId },
+        ],
+      };
+      next();
+    },
+    list({
+      db,
+      getFilter: req => req.queryFilter,
+    }),
+    totalCount({
+      db,
+      getFilter: req => req.queryFilter,
+    }),
     setContentRange({
       resource: routeName,
       getCount: req => req.departments.totalCount,

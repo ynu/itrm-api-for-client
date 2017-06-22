@@ -1,6 +1,6 @@
-import { sysRoles, info, error } from '../config';
-
 import { ObjectId } from 'mongodb';
+
+import { sysRoles, info, error } from '../config';
 import DepartmentManager from '../models/departments';
 
 const defaultGetQuery = req => (req.mongoQuery || {
@@ -13,8 +13,8 @@ const defaultGetQuery = req => (req.mongoQuery || {
 const getManager = (options) => {
   const { db, entityManger } = options;
   if (!db || !entityManger) {
-    error('crud:totalCount Error: db, entityManger 均不能为空');
-    throw new Error('crud:totalCount Error: db, entityManger 均不能为空');
+    error('crud Error: db, entityManger 均不能为空');
+    throw new Error('crud Error: db, entityManger 均不能为空');
   }
   return new entityManger(db);
 };
@@ -31,9 +31,11 @@ options参数：
 export const totalCount = (options = {}) => async (req, res, next) => {
   // 不提供dataName时，统一使用records
   const dataName = options.dataName || 'records';
-  const whereQueryOrFields = options.whereQueryOrFields || [];
+  const getFilter = options.getFilter || (() => ({}));
+  const filter = getFilter(req, res);
+
   const getQuery = options.getQuery || defaultGetQuery;
-  const getCurrentUserId = options.getCurrentUserId || (req2 => req2.user.id);
+  const queryOptions = getQuery(req);
   const success = options.success || ((count, req2, res2, next2) => {
     req2[dataName] = {
       ...req[dataName],
@@ -42,56 +44,43 @@ export const totalCount = (options = {}) => async (req, res, next) => {
     next2();
   });
   const manager = getManager(options);
-  const queryOptions = getQuery(req);
-  const userId = getCurrentUserId(req);
-
-    // 根据用户角色及id进行查询过滤
-  const orOptions = whereQueryOrFields.map(field => ({ [field]: userId }));
-  const query = queryOptions.query;
-  if (orOptions.length) {
-    query.$or = orOptions;
-  }
+  const query = {
+    ...queryOptions.query,
+    ...filter,
+  };
   info('totalCount query:', query);
   const count = await manager.count(query);
   success(count, req, res, next);
 };
 
 export const list = (options = {
-  entityManger: DepartmentManager,
   dataName: 'departments',
-  whereQueryOrFields: ['zyfzr.id', 'bmscy.id', 'creation.creator.id'] }) => async (req, res, next) => {
-    const db = options.db;
-    const whereQueryOrFields = options.whereQueryOrFields || [];
-    const getQuery = options.getQuery || defaultGetQuery;
-    const getCurrentUserId = options.getCurrentUserId || (req2 => req2.user.id);
-    const success = options.success || ((data, req2, res2, next2) => {
-      req2[options.dataName] = {
-        ...req[options.dataName],
-        list: data,
-      };
-      next2();
-    });
-    const entityManger = new options.entityManger(db);
-    const queryOptions = getQuery(req);
-    const userId = getCurrentUserId(req);
-    const orOptions = whereQueryOrFields.map(field => ({ [field]: userId }));
-    const query = queryOptions.query;
-    if (orOptions.length) {
-      query.$or = orOptions;
-    }
-    const data = await entityManger.find({
-      ...queryOptions,
-      query,
-    });
-    console.log(JSON.stringify({
-      ...queryOptions,
-      query: {
-        ...queryOptions.query,
-        $or: orOptions,
-      },
-    }));
-    success(data, req, res, next);
+}) => async (req, res, next) => {
+  // 除了通过formatQuery生成的来自request的查询条件以外，额外增加的查询条件，例如权限控制过滤等。
+  const getFilter = options.getFilter || (() => ({}));
+  const filter = getFilter(req, res);
+
+  const getQuery = options.getQuery || defaultGetQuery;
+  const success = options.success || ((data, req2, res2, next2) => {
+    req2[options.dataName] = {
+      ...req[options.dataName],
+      list: data,
+    };
+    next2();
+  });
+  const entityManger = getManager(options);
+  const queryOptions = getQuery(req);
+  const query = {
+    ...queryOptions.query,
+    ...filter,
   };
+  const data = await entityManger.find({
+    ...queryOptions,
+    query,
+  });
+  info('crud list query:', query);
+  success(data, req, res, next);
+};
 
 const checkOrFields = (whereCheckOrFields, data, userId) => {
   if (!whereCheckOrFields) {

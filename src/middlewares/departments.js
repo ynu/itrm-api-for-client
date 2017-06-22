@@ -15,10 +15,10 @@ export const totalCount = (options = {}) => totalCountCommon({
   ...options,
 });
 
-export const list = (options = {}) => {
-  const mergedOptions = Object.assign({}, defaultOptions, options);
-  return listCommon(mergedOptions);
-};
+export const list = (options = {}) => listCommon({
+  ...defaultOptions,
+  ...options,
+});
 
 export const getById = (options = {}) => getByIdCommon({
   ...defaultOptions,
