@@ -6,6 +6,7 @@ import { Router } from 'express';
 
 import { currentUser } from '../middlewares/auth';
 import { setContentRange } from '../middlewares/simple-rest';
+import { list } from '../middlewares/zzjg';
 
 export default (options) => {
   const { db, routeName } = options;
@@ -14,27 +15,13 @@ export default (options) => {
 
   router.get('/',
     currentUser({ db }),
+    list(),
     setContentRange({
       resource: routeName,
-      getCount: () => 10,
+      getCount: req => req.zzjg.list.length,
     }),
     (req, res) => {
-      const data = [{
-        dm: '1001',
-        mc: '1单位',
-      }, {
-        dm: '1002',
-        mc: '1单位1',
-      }, {
-        dm: '1003',
-        mc: '2单位1',
-      }, {
-        dm: '1004',
-        mc: '2单位2',
-      }, {
-        dm: '1005',
-        mc: '23单位',
-      }];
+      const data = req.zzjg.list;
       res.json(data.map(item => ({
         id: item.dm,
         name: item.mc,
