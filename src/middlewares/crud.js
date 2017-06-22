@@ -125,10 +125,11 @@ export const getById = (options = {
     const id = new ObjectId(getId(req));
     const userId = getCurrentUserId(req);
     const data = await entityManger.findById(id);
-    const check = checkOrFields(whereCheckOrFields, data, userId);
-    if (data && check) {
-      success(data, req, res, next);
-    } else fail(new Error('当前用户没有权限'), req, res, next);
+    success(data, req, res, next);
+    // const check = checkOrFields(whereCheckOrFields, data, userId);
+    // if (data && check) {
+    //   success(data, req, res, next);
+    // } else fail(new Error('当前用户没有权限'), req, res, next);
   };
 
 export const updateById = (options = {
