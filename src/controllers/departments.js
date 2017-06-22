@@ -5,10 +5,10 @@
 import { Router } from 'express';
 import { formatQuery, setContentRange } from '../middlewares/simple-rest';
 
-const DepartmentManager = require('../models/departments').default;
-const { generateCreation } = require('../middlewares/creation').default;
-const { currentUser } = require('../middlewares/auth').default;
-const { list, totalCount, getById, updateById, deleteById } = require('../middlewares/departments');
+import DepartmentManager from '../models/departments';
+import { generateCreation } from '../middlewares/creation';
+import { currentUser } from '../middlewares/auth';
+import { list, totalCount, getById, updateById, deleteById } from '../middlewares/departments';
 
 export default (options) => {
   const { db, routeName } = options;

@@ -1,7 +1,7 @@
 import { sysRoles, info, error } from '../config';
 
-const { ObjectId } = require('mongodb');
-const DepartmentManager = require('../models/departments').default;
+import { ObjectId } from 'mongodb';
+import DepartmentManager from '../models/departments';
 
 const defaultGetQuery = req => (req.mongoQuery || {
   query: {},

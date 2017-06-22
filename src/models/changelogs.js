@@ -1,4 +1,4 @@
-const EntityManager = require('../entity-manager').default;
+import EntityManager from '../entity-manager';
 
 export default class ChangeLogManager extends EntityManager {
   constructor(db, collectionName = 'changelogs') {

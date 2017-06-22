@@ -11,10 +11,14 @@ import 'babel-polyfill';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
-import { host, port, cookieKey, mongoUrl, error, info, sessionSecret } from './config';
-import controllers from './controllers';
+import cors from 'cors';
+import { MongoClient } from 'mongodb';
+// import morgan from 'morgan';
 import session from 'express-session';
 import cas from 'connect-cas';
+import { host, port, cookieKey, mongoUrl, error, info, sessionSecret } from './config';
+import controllers from './controllers/index';
+
 
 cas.configure({
   protocol: 'http',
@@ -28,8 +32,6 @@ cas.configure({
   },
 });
 
-const cors = require('cors');
-const { MongoClient } = require('mongodb');
 
 const app = express();
 
@@ -55,12 +57,10 @@ app.use(cors({
 }));
 
 const morgan = require('morgan');
-
 app.use(morgan('dev'));
 
 // https://github.com/expressjs/cors
 app.options('*', cors()); // include before other routes
-
 MongoClient.connect(mongoUrl, (err, db) => {
   if (err) {
     error(err.message);
@@ -75,7 +75,6 @@ MongoClient.connect(mongoUrl, (err, db) => {
       routeName,
     }));
   });
-
   app.listen(port, () => {
     console.log(`The server is running at http://${host}/`);
   });
@@ -88,12 +87,11 @@ MongoClient.connect(mongoUrl, (err, db) => {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-
-  app.use(function(err, req, res, next) {
+  app.use((err, req, res, next) => {
     res.status(err.status || 500);
     res.json({
       message: err.message,
-      error: err
+      error: err,
     });
   });
 
@@ -101,30 +99,29 @@ if (app.get('env') === 'development') {
   // see https://github.com/nwjs/nw.js/issues/1699#issuecomment-84861481
   // see https://nodejs.org/api/process.html
   process.on('uncaughtException', (error) => {
-    console.group('Node uncaughtException');
+    // console.group('Node uncaughtException');
     console.log('uncaughtException', error);
-    console.groupEnd();
+    // console.groupEnd();
   });
-  process.on('unhandledRejection', error => {
-    console.group('Node unhandledRejection');
+  process.on('unhandledRejection', (error) => {
+    // console.group('Node unhandledRejection');
     console.log('unhandledRejection', error);
-    console.groupEnd();
+    // console.groupEnd();
   });
-  process.on('rejectionHandled', error => {
-    console.group('Node rejectionHandled');
+  process.on('rejectionHandled', (error) => {
+    // console.group('Node rejectionHandled');
     console.log('rejectionHandled', error);
-    console.groupEnd();
+    // console.groupEnd();
   });
-
 }
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function(err, req, res, next) {
+app.use((err, req, res, next) => {
   res.status(err.status || 500);
   res.render('error', {
     message: err.message,
-    error: {}
+    error: {},
   });
 });
 
