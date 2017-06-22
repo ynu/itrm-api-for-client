@@ -5,7 +5,7 @@
 import { Router } from 'express';
 import cas from 'connect-cas';
 import url from 'url';
-import {webCallbackUrl, casServiceUrl} from '../config'
+import { webCallbackUrl, casServiceUrl } from '../config';
 
 export default (options) => {
   const router = new Router();
@@ -25,8 +25,8 @@ export default (options) => {
     // res.json({cas: req.session.cas});
   });
 
-  route.get('/test', async (req, res) => {
-    res.json({webCallbackUrl, casServiceUrl});
+  router.get('/test', async (req, res) => {
+    res.json({ webCallbackUrl, casServiceUrl });
   });
 
   router.get('/logout', async (req, res) => {
