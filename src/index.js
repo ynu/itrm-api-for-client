@@ -57,6 +57,7 @@ app.use(cors({
 }));
 
 const morgan = require('morgan');
+
 app.use(morgan('dev'));
 
 // https://github.com/expressjs/cors

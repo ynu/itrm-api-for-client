@@ -25,6 +25,8 @@ export const webCallbackUrl = process.env.WEB_CALLBACK_URL || 'http://itrm.ynu.e
 
 export const casServiceUrl = process.env.CAS_SERVICE_URL || 'http://api.itrm.ynu.edu.cn:4000/auth/';
 
+export const hrHost = process.env.HR_HOST || 'http://ynu-hr-api.ynu.edu.cn';
+
 // 角色系统
 export const sysRoles = {
   admin: 'itrm:admin',  // 超级管理员
