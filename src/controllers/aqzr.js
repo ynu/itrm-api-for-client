@@ -25,8 +25,26 @@ export default (options) => {
   router.get('/',
     currentUser({ db }),
     formatQuery(),
-    list({ db }),
-    totalCount({ db }),
+    // 添加权限过滤
+    // 一条记录的查询条件仅限于：创建者、管理员。
+    (req, res, next) => {
+      const userId = req.user.id;
+      req.queryFilter = {
+        $or: [
+            { 'creation.creator.id': userId },
+            { 'manager.id': userId },
+        ],
+      };
+      next();
+    },
+    list({
+      db,
+      getFilter: req => req.queryFilter,
+    }),
+    totalCount({
+      db,
+      getFilter: req => req.queryFilter,
+    }),
     setContentRange({
       resource: routeName,
       getCount: req => req.aqzr.totalCount,
@@ -47,11 +65,44 @@ export default (options) => {
   router.get('/:id/docx',
     currentUser(),
     formatQuery(),
-    listDepartment({ db }),
-    listWebsite({ db }),
-    listWechat({ db }),
-    listWeibo({ db }),
-    listEmail({ db }),
+    // 添加权限过滤
+    // 一条记录的查询条件仅限于：创建者、管理员。
+    (req, res, next) => {
+      const userId = req.user.id;
+      req.queryFilter = {
+        $or: [
+            { 'creation.creator.id': userId },
+            { 'manager.id': userId },
+        ],
+      };
+      next();
+    },
+    listDepartment({
+      db,
+      getFilter: req => ({
+        $or: [
+            { 'creation.creator.id': req.user.id },
+            { 'zyfzr.id': req.user.id },
+            { 'bmscy.id': req.user.id },
+        ],
+      }),
+    }),
+    listWebsite({
+      db,
+      getFilter: req => req.queryFilter,
+    }),
+    listWechat({
+      db,
+      getFilter: req => req.queryFilter,
+    }),
+    listWeibo({
+      db,
+      getFilter: req => req.queryFilter,
+    }),
+    listEmail({
+      db,
+      getFilter: req => req.queryFilter,
+    }),
     collectData(),
     // 可以使用{ data: sampleData }测试
     generateDocx(),
