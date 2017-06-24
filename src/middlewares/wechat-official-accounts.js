@@ -30,10 +30,10 @@ export const updateById = (options = {}) => {
   return updateByIdCommon(mergedOptions);
 };
 
-export const deleteById = (options = {}) => {
-  const mergedOptions = Object.assign({}, defaultOptions, options);
-  return deleteByIdCommon(mergedOptions);
-};
+export const deleteById = (options = {}) => deleteByIdCommon({
+  ...defaultOptions,
+  ...options,
+});
 
 export default {
   totalCount,
