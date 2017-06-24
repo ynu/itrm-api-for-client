@@ -42,7 +42,7 @@ export default (options) => {
     }),
     setContentRange({
       resource: routeName,
-      getCount: () => req => req.weiboAccounts.totalCount,
+      getCount: req => req.weiboAccounts.totalCount,
     }),
   async (req, res) => {
     const data = req.weiboAccounts.list;

@@ -1,12 +1,13 @@
 /*
  eslint-disable no-param-reassign, no-underscore-dangle
 */
-
+import { ObjectId } from 'mongodb';
 import { Router } from 'express';
 // import { secret } from '../config';
 import { formatQuery, setContentRange } from '../middlewares/simple-rest';
+import { currentUser } from '../middlewares/auth';
+import { list, totalCount } from '../middlewares/emails';
 
-import { ObjectId } from 'mongodb';
 import EmailManager from '../models/emails';
 import { generateCreation } from '../middlewares/creation';
 
@@ -17,13 +18,34 @@ export default (options) => {
   const router = new Router();
 
   router.get('/',
+    currentUser({ db }),
     formatQuery(),
+    // 添加权限过滤
+    // 一条记录的查询条件仅限于：创建者、管理员。
+    (req, res, next) => {
+      const userId = req.user.id;
+      req.queryFilter = {
+        $or: [
+            { 'creation.creator.id': userId },
+            { 'manager.id': userId },
+        ],
+      };
+      next();
+    },
+    list({
+      db,
+      getFilter: req => req.queryFilter,
+    }),
+    totalCount({
+      db,
+      getFilter: req => req.queryFilter,
+    }),
     setContentRange({
       resource: routeName,
-      getCount: () => emailm.count(),
+      getCount: req => req.emails.totalCount,
     }),
   async (req, res) => {
-    const data = await emailm.find(req.mongoQuery);
+    const data = req.emails.list;
     res.json(data.map(({ _id, ...other }) => ({
       id: _id,
       ...other,
@@ -36,14 +58,16 @@ export default (options) => {
   });
 
   router.post('/',
+    currentUser(),
     generateCreation(),
-  async (req, res) => {
-    const id = await emailm.insert({
-      creation: req.creation,
-      ...req.body,
-    });
-    res.json({ id });
-  });
+    async (req, res) => {
+      const id = await emailm.insert({
+        creation: req.creation,
+        ...req.body,
+      });
+      res.json({ id });
+    }
+  );
 
   router.put('/:id', async (req, res) => {
     const _id = new ObjectId(req.params.id);
