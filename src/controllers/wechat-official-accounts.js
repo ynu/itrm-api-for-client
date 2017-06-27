@@ -3,10 +3,10 @@
 */
 
 import { Router } from 'express';
-// import { secret } from '../config';
-import { formatQuery, setContentRange } from '../middlewares/simple-rest';
-
 import { ObjectId } from 'mongodb';
+import { formatQuery, setContentRange } from '../middlewares/simple-rest';
+import { currentUser } from '../middlewares/auth';
+import { list, totalCount } from '../middlewares/wechat-official-accounts';
 import WeChatOfficialAccountManager from '../models/wechat-official-accounts';
 import { generateCreation } from '../middlewares/creation';
 
@@ -17,18 +17,40 @@ export default (options) => {
   const router = new Router();
 
   router.get('/',
+    currentUser({ db }),
     formatQuery(),
+    // 添加权限过滤
+    // 一条记录的查询条件仅限于：创建者、管理员。
+    (req, res, next) => {
+      const userId = req.user.id;
+      req.queryFilter = {
+        $or: [
+            { 'creation.creator.id': userId },
+            { 'manager.id': userId },
+        ],
+      };
+      next();
+    },
+    list({
+      db,
+      getFilter: req => req.queryFilter,
+    }),
+    totalCount({
+      db,
+      getFilter: req => req.queryFilter,
+    }),
     setContentRange({
       resource: routeName,
-      getCount: () => woam.count(),
+      getCount: req => req.wechatOfficialAccounts.totalCount,
     }),
-  async (req, res) => {
-    const data = await woam.find(req.mongoQuery);
-    res.json(data.map(({ _id, ...other }) => ({
-      id: _id,
-      ...other,
-    })));
-  });
+    (req, res) => {
+      const data = req.wechatOfficialAccounts.list;
+      res.json(data.map(({ _id, ...other }) => ({
+        id: _id,
+        ...other,
+      })));
+    }
+  );
 
   router.get('/:id', async (req, res) => {
     const id = new ObjectId(req.params.id);
@@ -36,6 +58,7 @@ export default (options) => {
   });
 
   router.post('/',
+    currentUser(),
     generateCreation(),
     async (req, res) => {
       const id = await woam.insert({

@@ -233,3 +233,11 @@ ITRM API for Client with cookie authentication
     - id 指定资源的 ID；
 - `GET_MANY` 批量获取资源 `GET ?filter={ids:[123,456,789]}`
     - filter 过滤器 
+
+
+
+
+## CHANGELOG
+
+### v1.0
+- 实现基本功能，完成网站、微信公众号、微博、公共电子邮箱的SimpleRest操作
