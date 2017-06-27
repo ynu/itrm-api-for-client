@@ -241,3 +241,7 @@ ITRM API for Client with cookie authentication
 
 ### v1.0
 - 实现基本功能，完成网站、微信公众号、微博、公共电子邮箱的SimpleRest操作
+
+### v1.1
+
+- 实现通用的SimpleRestRouter `entitySimpleRestRouter`;
