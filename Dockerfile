@@ -20,5 +20,7 @@ RUN npm install
 # copy static resources to the specified location
 COPY . /app
 
+EXPOSE 4000
+
 # main application command
 CMD npm start
