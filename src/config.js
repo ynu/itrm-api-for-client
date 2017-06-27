@@ -21,7 +21,7 @@ export const mongoUrl = process.env.MONGO_URL || 'mongodb://localhost';
 
 export const casSecretKey = process.env.YNU_CAS_SECRET_KEY || 'my cas secret key';
 
-export const webCallbackUrl = process.env.WEB_CALLBACK_URL || 'http://itrm.ynu.edu.cn:3000/';
+export const webCallbackUrl = process.env.WEB_CALLBACK_URL || 'http://itrs-web.itrm.ynu.edu.cn:3000/';
 
 export const casServiceUrl = process.env.CAS_SERVICE_URL || 'http://api.itrm.ynu.edu.cn:4000/auth/';
 

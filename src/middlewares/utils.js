@@ -42,7 +42,7 @@ export const generateDocx = (options = {}) => async (req, res, next) => {
 
   // 读取docx模板文件，由于编译执行是在dist目录，所以模板的位置有变
   const content = fs
-    .readFileSync(path.resolve(__dirname, '../resources', '安全责任书.docx'), 'binary');
+    .readFileSync(path.resolve(__dirname, '../../resources', '安全责任书.docx'), 'binary');
   const zip = new JSZip(content);
   const doc = new Docxtemplater();
   doc.loadZip(zip);

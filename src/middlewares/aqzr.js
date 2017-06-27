@@ -41,6 +41,12 @@ export const collectData = (options = {}) => async (req, res, next) => {
   req.data.weixins = req.wechatOfficialAccounts.list;
   req.data.weibos = req.weiboAccounts.list;
   req.data.emails = req.emails.list;
+  const currentDate = new Date();
+  req.data.signDate = {
+    year: currentDate.getFullYear(),
+    month: currentDate.getMonth() + 1,
+    day: currentDate.getDate(),
+  };
   next();
 };
 
