@@ -27,9 +27,27 @@ export const casServiceUrl = process.env.CAS_SERVICE_URL || 'http://api.itrm.ynu
 
 export const hrHost = process.env.HR_HOST || 'http://ynu-hr-api.ynu.edu.cn';
 
+// 资源类型
+export const resources = {
+  DEPARTMENTS: 'departments',
+  WEBSITES: 'websites',
+  WECHAT_OFFICIAL_ACCOUNTS: 'wechat-official-accounts',
+  WEIBO_ACCOUNTS: 'weibo-accounts',
+  EMAILS: 'emails',
+  AQZR: 'aqzr',
+};
+
+// 修改日志的类型
+export const changeLogTypes = {
+  CREATE: 'create',
+  UPDATE: 'update',
+  DELETE: 'delete',
+};
+
 // 角色系统
 export const sysRoles = {
   admin: 'itrm:admin',  // 超级管理员
   deptManager: 'itrm:dept-manager', // 部门管理员
   resourceManager: 'itrm:resource-manager', // 资源管理员
 };
+
