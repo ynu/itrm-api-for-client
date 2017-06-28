@@ -3,12 +3,13 @@
 */
 
 import { Router } from 'express';
+import { resources, changeLogTypes } from '../config';
 import { formatQuery, setContentRange } from '../middlewares/simple-rest';
-
 import DepartmentManager from '../models/departments';
 import { generateCreation } from '../middlewares/creation';
 import { currentUser } from '../middlewares/auth';
-import { list, totalCount, getById, updateById, deleteById } from '../middlewares/departments';
+import { list, totalCount, getById, updateById, deleteById, insert } from '../middlewares/departments';
+import { insert as insertChangeLog } from '../middlewares/changelogs';
 import { list as zzjgList } from '../middlewares/zzjg';
 
 export default (options) => {
@@ -59,19 +60,50 @@ export default (options) => {
   );
 
   router.post('/',
+    // 检查用户登录，未登录则返回
     currentUser(),
+
+    // 创建Creation信息
     generateCreation(),
+
+    // 获取组织机构列表
     zzjgList(),
-  async (req, res) => {
-    const zzjgs = req.zzjg.list;
-    const zzjg = zzjgs.find(jg => req.body.dept.id === jg.dm);
-    const id = await deptm.insert({
-      creation: req.creation,
-      ...req.body,
-      name: zzjg.mc,
-    });
-    res.json({ id });
-  }
+
+    // 插入部门信息
+    insert({
+      manager: deptm,
+      getData: (req) => {
+        const zzjgs = req.zzjg.list;
+        const zzjg = zzjgs.find(jg => req.body.dept.id === jg.dm);
+        return {
+          creation: req.creation,
+          ...req.body,
+          name: zzjg.mc,
+        };
+      },
+    }),
+
+    // 插入修改日志信息
+    insertChangeLog({
+      db,
+      getData: req => ({
+        date: new Date(),
+        operator: {
+          id: req.user.id,
+        },
+        resource: {
+          category: resources.DEPARTMENTS,
+          id: req.records.insertedId,
+        },
+        note: '创建新记录',
+        type: changeLogTypes.CREATE,
+      }),
+    }),
+
+    // 返回数据
+    (req, res) => {
+      res.json({ id: req.records.insertedId });
+    }
   );
 
   router.put('/:id',
