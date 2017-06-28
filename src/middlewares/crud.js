@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 
-import { sysRoles, info, error } from '../config';
+import { info, error } from '../config';
 import DepartmentManager from '../models/departments';
 
 const defaultGetQuery = req => (req.mongoQuery || {
@@ -11,7 +11,11 @@ const defaultGetQuery = req => (req.mongoQuery || {
 获取当前实体的model对象
 */
 const getManager = (options) => {
-  const { db, entityManger } = options;
+  const { db, entityManger, manager } = options;
+
+  // 首先从manager属性中获取
+  if (manager) return manager;
+
   if (!db || !entityManger) {
     error('crud Error: db, entityManger 均不能为空');
     throw new Error('crud Error: db, entityManger 均不能为空');
@@ -177,6 +181,21 @@ export const deleteById = (options = {
     } else fail(new Error('当前用户没有权限'), req, res, next);
   };
 
+
+export const insert = (options = {}) => async (req, res, next) => {
+  const manager = getManager(options);
+  const getData = options.getData || (req2 => req2.body);
+  const success = options.success || ((id, req2, res2, next2) => {
+    req2.records = {
+      ...req2.records,
+      insertedId: id,
+    };
+    next2();
+  });
+  const data = getData(req, res);
+  const id = await manager.insert(data);
+  success(id, req, res, next);
+};
 
 export default {
   totalCount,

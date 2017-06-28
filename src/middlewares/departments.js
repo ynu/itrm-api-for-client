@@ -1,7 +1,7 @@
 import DepartmentManger from '../models/departments';
 import { totalCount as totalCountCommon, list as listCommon,
   getById as getByIdCommon, updateById as updateByIdCommon,
-  deleteById as deleteByIdCommon } from './crud';
+  deleteById as deleteByIdCommon, insert as insertCommon } from './crud';
 
 const defaultOptions = {
   entityManger: DepartmentManger,
@@ -35,10 +35,16 @@ export const deleteById = (options = {}) => deleteByIdCommon({
   ...options,
 });
 
+export const insert = (options = {}) => insertCommon({
+  ...defaultOptions,
+  ...options,
+});
+
 export default {
   totalCount,
   list,
   getById,
   updateById,
   deleteById,
+  insert,
 };

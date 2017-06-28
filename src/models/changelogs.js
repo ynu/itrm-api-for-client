@@ -1,4 +1,4 @@
-import EntityManager from '../entity-manager';
+import EntityManager from 'entity-manager';
 
 export default class ChangeLogManager extends EntityManager {
   constructor(db, collectionName = 'changelogs') {
