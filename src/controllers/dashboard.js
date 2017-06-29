@@ -17,8 +17,11 @@ export default (options) => {
   const router = new Router();
 
   router.get('/',
-    auth.currentUser(),
-    deptm.totalCount({ db }),
+    auth.currentUser({ db }),
+    deptm.totalCount({
+      db,
+      getFilter: deptm.getFilter,
+    }),
     wsm.totalCount({ db }),
     woam.totalCount({ db }),
     weibom.totalCount({ db }),

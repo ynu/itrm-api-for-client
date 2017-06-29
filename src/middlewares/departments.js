@@ -10,6 +10,16 @@ const defaultOptions = {
   whereCheckOrFields: [['bmscy', 'id'], ['creation', 'creator', 'id']],
 };
 
+// 添加权限过滤
+// 一条记录的查询条件仅限于：创建者、主要负责人、保密审查员。
+export const getFilter = req => ({
+  $or: [
+    { 'creation.creator.id': req.user.id },
+    { 'zyfzr.id': req.user.id },
+    { 'bmscy.id': req.user.id },
+  ],
+});
+
 export const totalCount = (options = {}) => totalCountCommon({
   ...defaultOptions,
   ...options,
@@ -47,4 +57,5 @@ export default {
   updateById,
   deleteById,
   insert,
+  getFilter,
 };

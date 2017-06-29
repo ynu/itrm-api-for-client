@@ -6,7 +6,7 @@ import { Router } from 'express';
 import { ObjectId } from 'mongodb';
 // import { secret } from '../config';
 import { formatQuery, setContentRange } from '../middlewares/simple-rest';
-import { list, totalCount } from '../middlewares/websites';
+import { list, totalCount, getFilter } from '../middlewares/websites';
 
 import WebSiteManager from '../models/websites';
 import { generateCreation } from '../middlewares/creation';
@@ -21,25 +21,13 @@ export default (options) => {
   router.get('/',
     currentUser({ db }),
     formatQuery(),
-    // 添加权限过滤
-    // 一条记录的查询条件仅限于：创建者、管理员。
-    (req, res, next) => {
-      const userId = req.user.id;
-      req.queryFilter = {
-        $or: [
-            { 'creation.creator.id': userId },
-            { 'manager.id': userId },
-        ],
-      };
-      next();
-    },
     list({
       db,
-      getFilter: req => req.queryFilter,
+      getFilter,
     }),
     totalCount({
       db,
-      getFilter: req => req.queryFilter,
+      getFilter,
     }),
     setContentRange({
       resource: routeName,

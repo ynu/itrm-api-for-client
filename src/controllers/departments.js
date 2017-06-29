@@ -8,7 +8,7 @@ import { formatQuery, setContentRange } from '../middlewares/simple-rest';
 import DepartmentManager from '../models/departments';
 import { generateCreation } from '../middlewares/creation';
 import { currentUser } from '../middlewares/auth';
-import { list, totalCount, getById, updateById, deleteById, insert } from '../middlewares/departments';
+import { list, totalCount, getById, updateById, deleteById, insert, getFilter } from '../middlewares/departments';
 import { insert as insertChangeLog } from '../middlewares/changelogs';
 import { list as zzjgList } from '../middlewares/zzjg';
 
@@ -21,26 +21,13 @@ export default (options) => {
   router.get('/',
     currentUser({ db }),
     formatQuery(),
-    // 添加权限过滤
-    // 一条记录的查询条件仅限于：创建者、主要负责人、保密审查员。
-    (req, res, next) => {
-      const userId = req.user.id;
-      req.queryFilter = {
-        $or: [
-            { 'creation.creator.id': userId },
-            { 'zyfzr.id': userId },
-            { 'bmscy.id': userId },
-        ],
-      };
-      next();
-    },
     list({
       db,
-      getFilter: req => req.queryFilter,
+      getFilter,
     }),
     totalCount({
       db,
-      getFilter: req => req.queryFilter,
+      getFilter,
     }),
     setContentRange({
       resource: routeName,

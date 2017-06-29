@@ -10,6 +10,14 @@ const defaultOptions = {
   whereCheckOrFields: [['manager', 'id'], ['creation', 'creator', 'id']],
 };
 
+// 添加权限过滤
+// 一条记录的查询条件仅限于：创建者、管理员。
+export const getFilter = req => ({
+  $or: [
+    { 'creation.creator.id': req.user.id },
+    { 'manager.id': req.user.id },
+  ],
+});
 export const totalCount = (options = {}) => totalCountCommon({
   ...defaultOptions,
   ...options,
