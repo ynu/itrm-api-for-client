@@ -244,4 +244,4 @@ ITRM API for Client with cookie authentication
 
 ### v1.1
 
-- 实现通用的SimpleRestRouter `entitySimpleRestRouter`;
+- 完成各个资源的读取权限控制;
