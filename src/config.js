@@ -47,7 +47,11 @@ export const changeLogTypes = {
 // 角色系统
 export const sysRoles = {
   admin: 'itrm:admin',  // 超级管理员
+  supervisor: 'itrm:supervisor',  // 仅具有查看权限的超级用户
   deptManager: 'itrm:dept-manager', // 部门管理员
   resourceManager: 'itrm:resource-manager', // 资源管理员
 };
 
+export const isAdmin = roles => Array.isArray(roles) && roles.includes(sysRoles.admin);
+
+export const isSupervisor = roles => Array.isArray(roles) && (isAdmin(roles) || roles.includes(sysRoles.supervisor));
