@@ -6,7 +6,7 @@ import { Router } from 'express';
 import { ObjectId } from 'mongodb';
 // import { secret } from '../config';
 import { formatQuery, setContentRange } from '../middlewares/simple-rest';
-import { list, totalCount, getFilter } from '../middlewares/websites';
+import { list, totalCount, listFilter } from '../middlewares/websites';
 
 import WebSiteManager from '../models/websites';
 import { generateCreation } from '../middlewares/creation';
@@ -23,11 +23,11 @@ export default (options) => {
     formatQuery(),
     list({
       db,
-      getFilter,
+      getFilter: listFilter,
     }),
     totalCount({
       db,
-      getFilter,
+      getFilter: listFilter,
     }),
     setContentRange({
       resource: routeName,

@@ -2,6 +2,7 @@ import WebsiteManager from '../models/websites';
 import { totalCount as totalCountCommon, list as listCommon,
   getById as getByIdCommon, updateById as updateByIdCommon,
   deleteById as deleteByIdCommon } from './crud';
+import { isSupervisor } from '../config';
 
 const defaultOptions = {
   entityManger: WebsiteManager,
@@ -12,12 +13,19 @@ const defaultOptions = {
 
 // 添加权限过滤
 // 一条记录的查询条件仅限于：创建者、管理员。
-export const getFilter = req => ({
-  $or: [
-    { 'creation.creator.id': req.user.id },
-    { 'manager.id': req.user.id },
-  ],
-});
+export const listFilter = (req) => {
+  const { id, roles } = req.user;
+  if (isSupervisor(roles)) {
+    return {};
+  }
+  return {
+    $or: [
+      { 'creation.creator.id': id },
+      { 'manager.id': id },
+    ],
+  };
+};
+
 export const totalCount = (options = {}) => totalCountCommon({
   ...defaultOptions,
   ...options,

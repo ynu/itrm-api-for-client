@@ -22,10 +22,22 @@ export default (options) => {
       db,
       getFilter: deptm.listFilter,
     }),
-    wsm.totalCount({ db }),
-    woam.totalCount({ db }),
-    weibom.totalCount({ db }),
-    emailm.totalCount({ db }),
+    wsm.totalCount({
+      db,
+      getFilter: wsm.listFilter,
+    }),
+    woam.totalCount({
+      db,
+      getFilter: woam.listFilter,
+    }),
+    weibom.totalCount({
+      db,
+      getFilter: weibom.listFilter,
+    }),
+    emailm.totalCount({
+      db,
+      getFilter: emailm.listFilter,
+    }),
     async (req, res) => {
       const { departments, websites, wechatOfficialAccounts, weiboAccounts, emails } = req;
       res.json({

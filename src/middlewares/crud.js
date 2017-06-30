@@ -3,10 +3,6 @@ import { ObjectId } from 'mongodb';
 import { info, error } from '../config';
 import DepartmentManager from '../models/departments';
 
-const defaultGetQuery = req => (req.mongoQuery || {
-  query: {},
-});
-
 /*
 获取当前实体的model对象
 */
@@ -38,51 +34,47 @@ export const totalCount = (options = {}) => async (req, res, next) => {
   const getFilter = options.getFilter || (() => ({}));
   const filter = getFilter(req, res);
 
-  const getQuery = options.getQuery || defaultGetQuery;
-  const queryOptions = getQuery(req);
   const success = options.success || ((count, req2, res2, next2) => {
     req2[dataName] = {
-      ...req[dataName],
+      ...req2[dataName],
+      totalCount: count,
+    };
+    req2.records = {
+      ...req2.records,
       totalCount: count,
     };
     next2();
   });
   const manager = getManager(options);
-  const query = {
-    ...queryOptions.query,
-    ...filter,
-  };
-  info('totalCount query:', query);
-  const count = await manager.count(query);
+
+  info('totalCount filter:', filter);
+  const count = await manager.count(filter);
   success(count, req, res, next);
 };
 
-export const list = (options = {
-  dataName: 'departments',
-}) => async (req, res, next) => {
-  // 除了通过formatQuery生成的来自request的查询条件以外，额外增加的查询条件，例如权限控制过滤等。
-  const getFilter = options.getFilter || (() => ({}));
-  const filter = getFilter(req, res);
-
-  const getQuery = options.getQuery || defaultGetQuery;
+export const list = (options = {}) => async (req, res, next) => {
+  // 不提供dataName时，统一使用records
+  const dataName = options.dataName || 'records';
+  const getQueryOptions = options.getQueryOptions || (() => ({
+    query: {},
+    skip: 0,
+    limit: 100,
+  }));
   const success = options.success || ((data, req2, res2, next2) => {
-    req2[options.dataName] = {
-      ...req[options.dataName],
+    req2[dataName] = {
+      ...req2[dataName],
+      list: data,
+    };
+    req2.records = {
+      ...req2.records,
       list: data,
     };
     next2();
   });
   const entityManger = getManager(options);
-  const queryOptions = getQuery(req);
-  const query = {
-    ...queryOptions.query,
-    ...filter,
-  };
-  const data = await entityManger.find({
-    ...queryOptions,
-    query,
-  });
-  info('crud list query:', query);
+  const queryOptions = getQueryOptions(req, res);
+  const data = await entityManger.find(queryOptions);
+  info('crud list query:', queryOptions);
   success(data, req, res, next);
 };
 

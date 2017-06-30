@@ -42,10 +42,10 @@ export default (options) => {
     }),
     setContentRange({
       resource: routeName,
-      getCount: req => req.emails.totalCount,
+      getCount: req => req.records.totalCount,
     }),
   async (req, res) => {
-    const data = req.emails.list;
+    const data = req.records.list;
     res.json(data.map(({ _id, ...other }) => ({
       id: _id,
       ...other,
