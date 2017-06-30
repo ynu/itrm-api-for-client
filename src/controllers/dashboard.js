@@ -20,7 +20,7 @@ export default (options) => {
     auth.currentUser({ db }),
     deptm.totalCount({
       db,
-      getFilter: deptm.getFilter,
+      getFilter: deptm.listFilter,
     }),
     wsm.totalCount({ db }),
     woam.totalCount({ db }),

@@ -8,7 +8,7 @@ import { formatQuery, setContentRange } from '../middlewares/simple-rest';
 import DepartmentManager from '../models/departments';
 import { generateCreation } from '../middlewares/creation';
 import { currentUser } from '../middlewares/auth';
-import { list, totalCount, getById, updateById, deleteById, insert, getFilter } from '../middlewares/departments';
+import { list, totalCount, getById, updateById, deleteById, insert, listFilter } from '../middlewares/departments';
 import { insert as insertChangeLog } from '../middlewares/changelogs';
 import { list as zzjgList } from '../middlewares/zzjg';
 
@@ -23,11 +23,11 @@ export default (options) => {
     formatQuery(),
     list({
       db,
-      getFilter,
+      getFilter: listFilter,
     }),
     totalCount({
       db,
-      getFilter,
+      getFilter: listFilter,
     }),
     setContentRange({
       resource: routeName,

@@ -13,7 +13,7 @@ const defaultOptions = {
 
 // 添加权限过滤
 // 一条记录的查询条件仅限于：创建者、主要负责人、保密审查员。
-export const getFilter = (req) => {
+export const listFilter = (req) => {
   if (!req.user) throw new Error('无法获取用户信息，请先执行中间件currrentUser');
 
   const { id, roles } = req.user;
@@ -28,6 +28,7 @@ export const getFilter = (req) => {
     ],
   };
 };
+
 
 export const totalCount = (options = {}) => totalCountCommon({
   ...defaultOptions,
@@ -66,5 +67,5 @@ export default {
   updateById,
   deleteById,
   insert,
-  getFilter,
+  listFilter,
 };
