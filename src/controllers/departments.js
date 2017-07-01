@@ -56,6 +56,13 @@ export default (options) => {
   router.get('/:id',
     currentUser(),
     getById({ db }),
+    (req, res) => {
+      const data = req.records.record;
+      res.json({
+        id: data._id,
+        ...data,
+      });
+    }
   );
 
   router.post('/',
@@ -141,6 +148,9 @@ export default (options) => {
       }
     },
     deleteById({ db }),
+    (req, res) => {
+      res.json({});
+    }
   );
 
 

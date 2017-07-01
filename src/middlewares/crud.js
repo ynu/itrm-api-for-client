@@ -79,21 +79,6 @@ export const list = (options = {}) => async (req, res, next) => {
   success(data, req, res, next);
 };
 
-const checkOrFields = (whereCheckOrFields, data, userId) => {
-  if (!whereCheckOrFields) {
-    return true;
-  }
-  return whereCheckOrFields.some((entry) => {
-    let dataCheck = data;
-    entry.forEach((field) => {
-      if (dataCheck) {
-        dataCheck = dataCheck[field];
-      }
-    });
-    return dataCheck === userId;
-  });
-};
-
 export const getById = (options = {}) => async (req, res, next) => {
   const getId = options.getId || (req2 => new ObjectId(req2.params.id));
   const success = options.success || ((data, req2, res2, next2) => {
