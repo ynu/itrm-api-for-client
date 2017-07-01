@@ -116,31 +116,30 @@ export const getById = (options = {}) => async (req, res, next) => {
   }
 };
 
-export const updateById = (options = {
-  entityManger: DepartmentManager,
-  dataName: 'departments',
-  whereCheckOrFields: [['zyfzr', 'id'], ['bmscy', 'id'], ['creation', 'creator', 'id']] }) => async (req, res, next) => {
-    const db = options.db;
-    const whereCheckOrFields = options.whereCheckOrFields || [];
-    const getId = options.getId || (req2 => req2.params.id);
-    const getData = options.getData || (req2 => req2.body);
-      res2.json({ id });
+export const updateById = (options = {}) => async (req, res, next) => {
+  const getId = options.getId || (req2 => (new ObjectId(req2.params.id)));
+  const getUpdateExpression = options.getUpdateQuery || (req2 => ({
+    $set: req2.body,
+  }));
+  const success = options.success || ((id, req2, res2) => {
+    res2.json({ id });
+  });
+  const fail = options.fail || ((err, req2, res2) => {
+    res2.status(403).send('当前用户没有权限');
+  });
+  const deptm = getManager(options);
+  try {
+    const _id = getId(req);
+    const updateExpression = getUpdateExpression(req, res);
+    await deptm.updateById({
+      ...updateExpression,
+      _id,
     });
-    const fail = options.fail || ((err, req2, res2) => {
-      res2.status(403).send('当前用户没有权限');
-    });
-    const deptm = new options.entityManger(db);
-    const _id = new ObjectId(getId(req));
-    const data = await deptm.findById(_id);
-    const check = checkOrFields(whereCheckOrFields, data, userId);
-    if (data && check) {
-      await deptm.updateById({
-        ...newData,
-        _id,
-      });
-      success(_id, req, res, next);
-    } else fail(new Error('当前用户没有权限'), req, res, next);
-  };
+    success(_id, req, res, next);
+  } catch (err) {
+    fail(new Error('当前用户没有权限'), req, res, next);
+  }
+};
 
 export const deleteById = (options = {}) => async (req, res, next) => {
   const getId = options.getId || (req2 => (new ObjectId(req2.params.id)));
@@ -157,7 +156,7 @@ export const deleteById = (options = {}) => async (req, res, next) => {
   const id = getId(req);
   try {
     await deptm.removeById(id);
-    success(id, req,res,next);
+    success(id, req, res, next);
   } catch (err) {
     fail(err, req, res, next);
   }
