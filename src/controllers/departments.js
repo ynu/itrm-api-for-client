@@ -3,12 +3,12 @@
 */
 
 import { Router } from 'express';
-import { resources, changeLogTypes } from '../config';
+import { resources, changeLogTypes, info, error, isSupervisor, isAdmins } from '../config';
 import { formatQuery, setContentRange } from '../middlewares/simple-rest';
 import DepartmentManager from '../models/departments';
 import { generateCreation } from '../middlewares/creation';
 import { currentUser } from '../middlewares/auth';
-import { list, totalCount, getById, updateById, deleteById, insert, listFilter } from '../middlewares/departments';
+import { list, totalCount, getById, updateById, deleteById, insert, listFilter, deleteCheck } from '../middlewares/departments';
 import { insert as insertChangeLog } from '../middlewares/changelogs';
 import { list as zzjgList } from '../middlewares/zzjg';
 
@@ -20,10 +20,22 @@ export default (options) => {
 
   router.get('/',
     currentUser({ db }),
-    formatQuery(),
+    formatQuery({
+      success: (queryOptions, req, res, next) => {
+        info('departments list queryOptions:', queryOptions);
+        req.queryOptions = queryOptions;
+        next();
+      },
+    }),
     list({
       db,
-      getFilter: listFilter,
+      getQueryOptions: req => ({
+        ...req.queryOptions,
+        query: {
+          ...req.queryOptions.query,
+          ...listFilter(req),
+        },
+      }),
     }),
     totalCount({
       db,
@@ -99,7 +111,35 @@ export default (options) => {
   );
 
   router.delete('/:id',
-    currentUser(),
+    currentUser({ db }),
+    getById({
+      db,
+      success: (dept, req, res, next) => {
+        req.records = {
+          ...req.records,
+          dept,
+        };
+        next();
+      },
+    }),
+    // 检查当前用户是否具有删除权限
+    (req, res, next) => {
+      const { id, roles } = req.user;
+
+      if (isSupervisor(roles)) next();
+      else {
+        const dept = req.records.dept;
+        try {
+          if (dept.creation.creator.id === id
+            || dept.zyfzr.id === id
+            || dept.bmscy.id === id) next();
+          else res.status(403).send('没有删除权限');
+        } catch (err) {
+          error('departments getOneCheck:', err.message);
+          res.status(500).send(err.message);
+        }
+      }
+    },
     deleteById({ db }),
   );
 
