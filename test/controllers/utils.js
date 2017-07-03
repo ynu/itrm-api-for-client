@@ -1,8 +1,8 @@
 // import chai from 'chai';
 import { getApp } from '../../src/utils';
-import { port } from '../../src/config';
+// import { port } from '../../src/config';
 
-export const getTestApp = async () => {
+export const getTestApp = async (port) => {
   const app = await getApp();
   app.get('/test-auth/:userId', (req, res) => {
     // eslint-disable-next-line
