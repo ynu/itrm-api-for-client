@@ -3,7 +3,7 @@
 */
 
 import { Router } from 'express';
-import { resources, changeLogTypes, info, error, isSupervisor, isAdmins } from '../config';
+import { resources, changeLogTypes, info, error, isSupervisor, isAdmin } from '../config';
 import { formatQuery, setContentRange } from '../middlewares/simple-rest';
 import DepartmentManager from '../models/departments';
 import { generateCreation } from '../middlewares/creation';
@@ -113,7 +113,35 @@ export default (options) => {
   );
 
   router.put('/:id',
-    currentUser(),
+    currentUser({ db }),
+    getById({
+      db,
+      success: (dept, req, res, next) => {
+        req.records = {
+          ...req.records,
+          dept,
+        };
+        next();
+      },
+    }),
+    // 检查当前用户是否具有编辑权限
+    (req, res, next) => {
+      const { id, roles } = req.user;
+
+      if (isAdmin(roles)) next();
+      else {
+        const dept = req.records.dept;
+        try {
+          if (dept.creation.creator.id === id
+            || dept.zyfzr.id === id
+            || dept.bmscy.id === id) next();
+          else res.status(403).send('没有修改权限');
+        } catch (err) {
+          error('departments getOneCheck:', err.message);
+          res.status(500).send(err.message);
+        }
+      }
+    },
     updateById({ db }),
   );
 
@@ -133,7 +161,7 @@ export default (options) => {
     (req, res, next) => {
       const { id, roles } = req.user;
 
-      if (isSupervisor(roles)) next();
+      if (isAdmin(roles)) next();
       else {
         const dept = req.records.dept;
         try {

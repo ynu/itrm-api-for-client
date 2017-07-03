@@ -8,9 +8,9 @@ describe('simple-rest', () => {
   describe('formatQuery', () => {
     it('GET_LIST', () => {
       const query = {
-        sort: ['title', 'ASC'],
-        range: [10, 20],
-        filter: { name: 'name' },
+        sort: JSON.stringify(['title', 'ASC']),
+        range: JSON.stringify([10, 20]),
+        filter: JSON.stringify({ name: 'name' }),
       };
       const { req, res } = createMocks({ query });
       formatQuery()(req, res, next);
@@ -23,7 +23,7 @@ describe('simple-rest', () => {
   });
   describe('setContentRange', () => {
     it('正确设置', async () => {
-      const { req, res } = createMocks({ query: { range: [10, 20] } });
+      const { req, res } = createMocks({ query: { range: JSON.stringify([10, 20]) } });
       const resource = 'res1';
       const getCount = () => Promise.resolve(88);
       await setContentRange({ resource, getCount })(req, res, next);
@@ -32,3 +32,5 @@ describe('simple-rest', () => {
     });
   });
 });
+
+run();

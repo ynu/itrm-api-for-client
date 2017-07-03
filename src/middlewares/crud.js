@@ -103,9 +103,7 @@ export const getById = (options = {}) => async (req, res, next) => {
 
 export const updateById = (options = {}) => async (req, res, next) => {
   const getId = options.getId || (req2 => (new ObjectId(req2.params.id)));
-  const getUpdateExpression = options.getUpdateQuery || (req2 => ({
-    $set: req2.body,
-  }));
+  const getUpdateExpression = options.getUpdateQuery || (req2 => req2.body);
   const success = options.success || ((id, req2, res2) => {
     res2.json({ id });
   });
@@ -122,7 +120,8 @@ export const updateById = (options = {}) => async (req, res, next) => {
     });
     success(_id, req, res, next);
   } catch (err) {
-    fail(new Error('当前用户没有权限'), req, res, next);
+    console.log(JSON.stringify(err));
+    fail(err, req, res, next);
   }
 };
 

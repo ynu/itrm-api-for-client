@@ -67,7 +67,7 @@ ITRM API for Client with cookie authentication
 ```javascript
 {
     id,                 // 唯一Id
-    name,               // 单位名称
+    dept,               // ZZjg 组织机构
     zyfzr: {},  // Person, 主要负责人
     bmscy: {},              // Person, 保密审查员
     manager: {},    // Person 当前记录管理员

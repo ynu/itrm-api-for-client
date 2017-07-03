@@ -7,7 +7,7 @@ import cas from 'connect-cas';
 import url from 'url';
 import { webCallbackUrl, casServiceUrl } from '../config';
 
-export default (options) => {
+export default () => {
   const router = new Router();
 
   // cas.ssout                    : handle logout requests directly from the CAS server
