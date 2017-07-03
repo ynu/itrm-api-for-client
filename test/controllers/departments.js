@@ -1,39 +1,13 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
-import { getApp } from '../../src/utils';
-import { port, sysRoles } from '../../src/config';
+import { getTestApp, generalUser, generalUser2 } from './utils';
 
 chai.use(chaiHttp);
 let app;
-(async () => {
-  app = await getApp();
-  app.get('/test-auth/:userId', (req, res) => {
-    req.session.cas = {
-      user: req.params.userId,
-    };
-    res.json({});
-  });
-  app.listen(port, () => {
-    console.log(`The test server is running at port: ${port}`);
-    run();
-  });
-})();
-
-const generalUser = {
-  id: 'generalUser',
-};
-const generalUser2 = {
-  id: 'generalUser2',
-};
-// const supervisor = {
-//   id: 'suerpvisor',
-//   roles: [sysRoles.supervisor],
-// };
-// const admin = {
-//   id: 'admin',
-//   roles: [sysRoles.admin],
-// };
-
+getTestApp().then((testApp) => {
+  app = testApp;
+  run();
+});
 
 // 多个用户登录
 [
@@ -43,11 +17,10 @@ const generalUser2 = {
   // admin,
 ].map(user => describe(`departments controller, user: ${user.id}`, () => {
   let agent;
-  before((done) => {
+  before(async () => {
     agent = chai.request.agent(app);
-
     // 用户登录
-    agent.get(`/test-auth/${user.id}`).end(done);
+    await agent.get(`/test-auth/${user.id}`);
   });
 
   const newIds = [];
@@ -139,7 +112,7 @@ describe('未登录用户：departments controller', () => {
     () => agent.post('/departments'),
     () => agent.put('/departments/dfsfsf'),
     () => agent.delete('/departments/sdfsdf'),
-  ].map(getReq => it('opteartion', (done) => {
+  ].map(getReq => it('未登录用户CRUD', (done) => {
     getReq().end((err, res) => {
       expect(res).to.have.status(401);
       done();

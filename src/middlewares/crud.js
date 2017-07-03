@@ -1,7 +1,6 @@
 import { ObjectId } from 'mongodb';
 
 import { info, error } from '../config';
-import DepartmentManager from '../models/departments';
 
 /*
 获取当前实体的model对象
@@ -16,7 +15,7 @@ const getManager = (options) => {
     error('crud Error: db, entityManger 均不能为空');
     throw new Error('crud Error: db, entityManger 均不能为空');
   }
-  return new entityManger(db);
+  return new entityManger(db); // eslint-disable-line
 };
 
 /*
@@ -120,7 +119,6 @@ export const updateById = (options = {}) => async (req, res, next) => {
     });
     success(_id, req, res, next);
   } catch (err) {
-    console.log(JSON.stringify(err));
     fail(err, req, res, next);
   }
 };
