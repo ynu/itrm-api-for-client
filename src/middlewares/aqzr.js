@@ -2,11 +2,28 @@ import AqzrManager from '../models/aqzr';
 import { totalCount as totalCountCommon, list as listCommon,
   getById as getByIdCommon, updateById as updateByIdCommon,
   deleteById as deleteByIdCommon } from './crud';
+import { isSupervisor, isAdmin, info, error } from '../config';
 
 const defaultOptions = {
   entityManger: AqzrManager,
   dataName: 'aqzr',
   whereCheckOrFields: [['bmscy', 'id'], ['creation', 'creator', 'id']],
+};
+
+// 添加权限过滤
+// 一条记录的查询条件仅限于：创建者、主要负责人、保密审查员。
+export const listFilter = (req) => {
+  if (!req.user) throw new Error('无法获取用户信息，请先执行中间件currrentUser');
+
+  const { id, roles } = req.user;
+  let filter = {};
+  if (!isSupervisor(roles)) {
+    filter = {
+      'creation.creator.id': id,
+    };
+  }
+  info('aqzr listFilter:', filter);
+  return filter;
 };
 
 export const totalCount = (options = {}) => totalCountCommon({

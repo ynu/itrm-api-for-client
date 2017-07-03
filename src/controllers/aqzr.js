@@ -4,12 +4,13 @@
 
 import { Router } from 'express';
 import { formatQuery, setContentRange } from '../middlewares/simple-rest';
-import { generateDocx, sampleData } from '../middlewares/utils';
+import { generateDocx } from '../middlewares/utils';
+import { resources, changeLogTypes, info, error, isSupervisor, isAdmin } from '../config';
 
 import AqzrManager from '../models/aqzr';
 import { generateCreation } from '../middlewares/creation';
 import { currentUser } from '../middlewares/auth';
-import { list, totalCount, getById, updateById, deleteById, collectData } from '../middlewares/aqzr';
+import { list, totalCount, getById, updateById, deleteById, collectData, listFilter } from '../middlewares/aqzr';
 import { getById as getByIdDepartment, list as listDepartment } from '../middlewares/departments';
 import { list as listWebsite } from '../middlewares/websites';
 import { list as listWechat } from '../middlewares/wechat-official-accounts';
@@ -24,26 +25,26 @@ export default (options) => {
 
   router.get('/',
     currentUser({ db }),
-    formatQuery(),
-    // 添加权限过滤
-    // 一条记录的查询条件仅限于：创建者、管理员。
-    (req, res, next) => {
-      const userId = req.user.id;
-      req.queryFilter = {
-        $or: [
-            { 'creation.creator.id': userId },
-            { 'manager.id': userId },
-        ],
-      };
-      next();
-    },
+    formatQuery({
+      success: (queryOptions, req, res, next) => {
+        info('aqzr list queryOptions:', queryOptions);
+        req.queryOptions = queryOptions;
+        next();
+      },
+    }),
     list({
       db,
-      getFilter: req => req.queryFilter,
+      getQueryOptions: req => ({
+        ...req.queryOptions,
+        query: {
+          ...req.queryOptions.query,
+          ...listFilter(req),
+        },
+      }),
     }),
     totalCount({
       db,
-      getFilter: req => req.queryFilter,
+      getFilter: listFilter,
     }),
     setContentRange({
       resource: routeName,
@@ -60,6 +61,13 @@ export default (options) => {
   router.get('/:id',
     currentUser(),
     getById({ db }),
+    (req, res) => {
+      const data = req.records.record;
+      res.json({
+        id: data._id,
+        ...data,
+      });
+    }
   );
 
   router.get('/:id/docx',
