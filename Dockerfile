@@ -11,8 +11,10 @@ WORKDIR /app
 
 RUN npm install
 
+RUN npm run build
+
 # copy static resources to the specified location
 COPY . /app
 
 # main application command
-CMD npm start
+CMD node dist/
