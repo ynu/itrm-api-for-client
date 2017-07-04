@@ -160,6 +160,23 @@ export const insert = (options = {}) => async (req, res, next) => {
   success(id, req, res, next);
 };
 
+// export const countByDept = (options = {}) => async (req, res, next) => {
+//   const success = options.success || ((count, req2, res2, next2) => {
+//     req2.records = {
+//       countByDept: count,
+//     };
+//     next2();
+//   });
+//   const fail = options.fail || ((err, req2, res2) => {
+//     res2.status(500).send(err.message);
+//   });
+
+//   const manager = getManager(options);
+//   try {
+
+//   }
+// };
+
 export default {
   totalCount,
   list,

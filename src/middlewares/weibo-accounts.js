@@ -59,4 +59,5 @@ export const insert = (options = {}) => insertCommon({
 export default {
   totalCount,
   list,
+  listFilter,
 };

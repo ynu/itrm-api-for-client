@@ -64,4 +64,5 @@ export const collectData = (options = {}) => async (req, res, next) => {
 export default {
   totalCount,
   list,
+  listFilter,
 };
