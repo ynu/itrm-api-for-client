@@ -21,22 +21,57 @@ export default (options) => {
     deptm.totalCount({
       db,
       getFilter: deptm.listFilter,
+      success: (totalCount, req, res, next) => {
+        req.departments = {
+          ...req.departments,
+          totalCount,
+        };
+        next();
+      },
     }),
     wsm.totalCount({
       db,
       getFilter: wsm.listFilter,
+      success: (totalCount, req, res, next) => {
+        req.websites = {
+          ...req.websites,
+          totalCount,
+        };
+        next();
+      },
     }),
     woam.totalCount({
       db,
       getFilter: woam.listFilter,
+      success: (totalCount, req, res, next) => {
+        req.wechatOfficialAccounts = {
+          ...req.wechatOfficialAccounts,
+          totalCount,
+        };
+        next();
+      },
     }),
     weibom.totalCount({
       db,
       getFilter: weibom.listFilter,
+      success: (totalCount, req, res, next) => {
+        req.weiboAccounts = {
+          ...req.weiboAccounts,
+          totalCount,
+        };
+        next();
+      },
     }),
     emailm.totalCount({
       db,
       getFilter: emailm.listFilter,
+      success: (totalCount, req, res, next) => {
+        req.emails = {
+          ...req.emails,
+          totalCount,
+        };
+        next();
+      },
     }),
     async (req, res) => {
       const { departments, websites, wechatOfficialAccounts, weiboAccounts, emails } = req;
