@@ -245,3 +245,5 @@ ITRM API for Client with cookie authentication
 ### v1.1
 
 - 完成各个资源的读取权限控制;
+- 完成多角色单元测试;
+- dashboard显示根据部门进行统计的结果；
