@@ -3,15 +3,16 @@
 */
 
 import { Router } from 'express';
-import { ObjectId } from 'mongodb';
 // import { secret } from '../config';
 import { formatQuery, setContentRange } from '../middlewares/simple-rest';
-import { list, totalCount, listFilter, getById, updateById, deleteById } from '../middlewares/websites';
-import { resources, changeLogTypes, info, error, isSupervisor, isAdmin } from '../config';
+import { list, totalCount, listFilter, getById, updateById, deleteById, insert } from '../middlewares/websites';
+import { resources, changeLogTypes, info, error, isAdmin } from '../config';
 
 import WebSiteManager from '../models/websites';
 import { generateCreation } from '../middlewares/creation';
 import { currentUser } from '../middlewares/auth';
+import { insert as insertChangeLog } from '../middlewares/changelogs';
+import { list as zzjgList } from '../middlewares/zzjg';
 
 export default (options) => {
   const { db, routeName } = options;
@@ -70,14 +71,49 @@ export default (options) => {
 
   // 创建数据
   router.post('/',
+    // 检查用户登录，未登录则返回
     currentUser(),
+
+    // 创建Creation信息
     generateCreation(),
-    async (req, res) => {
-      const id = await wsm.insert({
-        creation: req.creation,
-        ...req.body,
-      });
-      res.json({ id });
+
+    // 获取组织机构列表
+    zzjgList(),
+
+    // 插入部门信息
+    insert({
+      manager: wsm,
+      getData: (req) => {
+        const zzjgs = req.zzjg.list;
+        const zzjg = zzjgs.find(jg => req.body.dept.id === jg.dm);
+        return {
+          creation: req.creation,
+          ...req.body,
+          name: zzjg.mc,
+        };
+      },
+    }),
+
+    // 插入修改日志信息
+    insertChangeLog({
+      db,
+      getData: req => ({
+        date: new Date(),
+        operator: {
+          id: req.user.id,
+        },
+        resource: {
+          category: resources.DEPARTMENTS,
+          id: req.records.insertedId,
+        },
+        note: '创建新记录',
+        type: changeLogTypes.CREATE,
+      }),
+    }),
+
+    // 返回数据
+    (req, res) => {
+      res.json({ id: req.records.insertedId });
     }
   );
 

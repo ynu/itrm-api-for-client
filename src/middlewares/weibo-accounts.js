@@ -1,7 +1,7 @@
 import WeiboAccountManager from '../models/weibo-accounts';
 import { totalCount as totalCountCommon, list as listCommon,
   getById as getByIdCommon, updateById as updateByIdCommon,
-  deleteById as deleteByIdCommon } from './crud';
+  deleteById as deleteByIdCommon, insert as insertCommon } from './crud';
 import { isSupervisor } from '../config';
 
 const defaultOptions = {
@@ -47,6 +47,11 @@ export const updateById = (options = {}) => {
 };
 
 export const deleteById = (options = {}) => deleteByIdCommon({
+  ...defaultOptions,
+  ...options,
+});
+
+export const insert = (options = {}) => insertCommon({
   ...defaultOptions,
   ...options,
 });

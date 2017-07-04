@@ -1,7 +1,7 @@
 import WebsiteManager from '../models/websites';
 import { totalCount as totalCountCommon, list as listCommon,
   getById as getByIdCommon, updateById as updateByIdCommon,
-  deleteById as deleteByIdCommon } from './crud';
+  deleteById as deleteByIdCommon, insert as insertCommon } from './crud';
 import { isSupervisor } from '../config';
 
 const defaultOptions = {
@@ -50,6 +50,11 @@ export const deleteById = (options = {}) => {
   const mergedOptions = Object.assign({}, defaultOptions, options);
   return deleteByIdCommon(mergedOptions);
 };
+
+export const insert = (options = {}) => insertCommon({
+  ...defaultOptions,
+  ...options,
+});
 
 export default {
   totalCount,

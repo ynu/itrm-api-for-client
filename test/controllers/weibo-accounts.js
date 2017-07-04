@@ -6,11 +6,11 @@ import UirManager from '../../src/models/users-in-roles';
 
 chai.use(chaiHttp);
 let app;
-getTestApp(4301).then((testApp) => {
+getTestApp(4501).then((testApp) => {
   app = testApp;
   run();
 });
-const controller = 'websites';
+const controller = 'weiboAccounts';
 
 // 多个用户登录
 [
@@ -85,7 +85,6 @@ const controller = 'websites';
     const result = JSON.parse(res.text);
     expect(result.dept.id).is.eql('1002');
   });
-
   it('DELETE 删除数据', (done) => {
     const promises = newIds.map(async (id) => {
       const res = await agent.delete(`/${controller}/${id}`);

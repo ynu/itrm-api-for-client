@@ -85,11 +85,12 @@ const controller = 'departments';
     const result = JSON.parse(res.text);
     expect(result.dept.id).is.eql('1002');
   });
-  it('DELETE 删除数据', async () => {
-    newIds.forEach(async (id) => {
+  it('DELETE 删除数据', (done) => {
+    const promises = newIds.map(async (id) => {
       const res = await agent.delete(`/${controller}/${id}`);
       expect(res).to.have.status(200);
     });
+    Promise.all(promises).then(() => done());
   });
 
   it('GET 获取列表，删除后应该没有数据', (done) => {
@@ -303,11 +304,12 @@ describe(`Admin - ${controller} controller`, () => {
     expect(result.dept.id).is.eql('1002');
   });
 
-  it('DELETE 删除数据', async () => {
-    newIds.forEach(async (id) => {
+  it('DELETE 删除数据', (done) => {
+    const promises = newIds.map(async (id) => {
       const res = await agent.delete(`/${controller}/${id}`);
       expect(res).to.have.status(200);
     });
+    Promise.all(promises).then(() => done());
   });
 
   it('GET 获取列表，删除后应该没有数据', (done) => {
