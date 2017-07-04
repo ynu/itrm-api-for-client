@@ -31,43 +31,6 @@ export const listFilter = (req) => {
   return filter;
 };
 
-/*
-检查函数，用于检查当前用户是否可以获取指定的数据
-*/
-// export const getOneCheck = (dept, req) => {
-//   if (!req.user) throw new Error('无法获取用户信息，请先执行中间件currrentUser');
-//   const { id, roles } = req.user;
-//   if (isSupervisor(roles)) return true;
-//   try {
-//     if (dept.creation.creator.id === id
-//       || dept.zyfzr.id === id
-//       || dept.bmscy.id === id) return true;
-//     return false;
-//   } catch (err) {
-//     error('departments getOneCheck:', err.message);
-//     return false;
-//   }
-// };
-
-/*
-检查函数，用于检查当前用户是否可以删除指定的dept
-可删除数据的对象包括：
-- 创建者
-- 保密审查员
-- 系统管理员
-*/
-// export const deleteCheck = (dept, user) => {
-//   const { id, roles } = user;
-//   if (isAdmin(roles)) return true;
-//   try {
-//     if (dept.creation.creator.id === id
-//       || dept.bmscy.id === id) return true;
-//     return false;
-//   } catch (err) {
-//     error('departments deleteCheck:', err.message);
-//     return false;
-//   }
-// };
 
 export const totalCount = (options = {}) => totalCountCommon({
   ...defaultOptions,

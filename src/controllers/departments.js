@@ -43,10 +43,10 @@ export default (options) => {
     }),
     setContentRange({
       resource: routeName,
-      getCount: req => req.departments.totalCount,
+      getCount: req => req.records.totalCount,
     }),
     (req, res) => {
-      const data = req.departments.list;
+      const data = req.records.list;
       res.json(data.map(({ _id, ...other }) => ({
         id: _id,
         ...other,
@@ -54,7 +54,7 @@ export default (options) => {
     });
 
   router.get('/:id',
-    currentUser(),
+    currentUser({ db }),
     getById({ db }),
     (req, res) => {
       const data = req.records.record;

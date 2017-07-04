@@ -1,6 +1,17 @@
 // import chai from 'chai';
 import { getApp } from '../../src/utils';
 // import { port } from '../../src/config';
+// import UirManager from '../../src/models/users-in-roles';
+import { sysRoles } from '../../src/config';
+
+export const supervisor = {
+  id: 'test_suerpvisor',
+  roles: [sysRoles.supervisor],
+};
+export const admin = {
+  id: 'test_admin',
+  roles: [sysRoles.admin],
+};
 
 export const getTestApp = async (port) => {
   const app = await getApp();
@@ -23,13 +34,3 @@ export const generalUser = {
 export const generalUser2 = {
   id: 'generalUser2',
 };
-
-
-// const supervisor = {
-//   id: 'suerpvisor',
-//   roles: [sysRoles.supervisor],
-// };
-// const admin = {
-//   id: 'admin',
-//   roles: [sysRoles.admin],
-// };

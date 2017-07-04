@@ -6,7 +6,8 @@ import { Router } from 'express';
 import { ObjectId } from 'mongodb';
 // import { secret } from '../config';
 import { formatQuery, setContentRange } from '../middlewares/simple-rest';
-import { list, totalCount, listFilter } from '../middlewares/websites';
+import { list, totalCount, listFilter, getById, updateById, deleteById } from '../middlewares/websites';
+import { resources, changeLogTypes, info, error, isSupervisor, isAdmin } from '../config';
 
 import WebSiteManager from '../models/websites';
 import { generateCreation } from '../middlewares/creation';
@@ -20,10 +21,22 @@ export default (options) => {
 
   router.get('/',
     currentUser({ db }),
-    formatQuery(),
+    formatQuery({
+      success: (queryOptions, req, res, next) => {
+        info('websites list queryOptions:', queryOptions);
+        req.queryOptions = queryOptions;
+        next();
+      },
+    }),
     list({
       db,
-      getFilter: listFilter,
+      getQueryOptions: req => ({
+        ...req.queryOptions,
+        query: {
+          ...req.queryOptions.query,
+          ...listFilter(req),
+        },
+      }),
     }),
     totalCount({
       db,
@@ -31,10 +44,10 @@ export default (options) => {
     }),
     setContentRange({
       resource: routeName,
-      getCount: req => req.websites.totalCount,
+      getCount: req => req.records.totalCount,
     }),
     async (req, res) => {
-      const data = req.websites.list;
+      const data = req.records.list;
       res.json(data.map(({ _id, ...other }) => ({
         id: _id,
         ...other,
@@ -42,14 +55,17 @@ export default (options) => {
     }
   );
 
-  router.get('/:id', async (req, res) => {
-    const id = new ObjectId(req.params.id);
-    const data = await wsm.findById(id);
-    res.json({
-      id,
-      ...data,
-    });
-  });
+  router.get('/:id',
+    currentUser({ db }),
+    getById({ db }),
+    (req, res) => {
+      const data = req.records.record;
+      res.json({
+        id: data._id,
+        ...data,
+      });
+    }
+  );
 
 
   // 创建数据
@@ -66,21 +82,71 @@ export default (options) => {
   );
 
   router.put('/:id',
-    async (req, res) => {
-      const _id = new ObjectId(req.params.id);
-      await wsm.updateById({
-        ...req.body,
-        _id,
-      });
-      res.json({ id: _id });
-    }
+    currentUser({ db }),
+    getById({
+      db,
+      success: (website, req, res, next) => {
+        req.records = {
+          ...req.records,
+          website,
+        };
+        next();
+      },
+    }),
+    // 检查当前用户是否具有编辑权限
+    (req, res, next) => {
+      const { id, roles } = req.user;
+
+      if (isAdmin(roles)) next();
+      else {
+        const website = req.records.website;
+        try {
+          if (website.creation.creator.id === id
+            || website.manager.id === id) next();
+          else res.status(403).send('没有修改权限');
+        } catch (err) {
+          error('website getOneCheck:', err.message);
+          res.status(500).send(err.message);
+        }
+      }
+    },
+    updateById({ db }),
   );
 
-  router.delete('/:id', async(req, res) => {
-    const id = new ObjectId(req.params.id);
-    await wsm.removeById(id);
-    res.json({ id });
-  });
+  router.delete('/:id',
+    currentUser({ db }),
+    getById({
+      db,
+      success: (website, req, res, next) => {
+        req.records = {
+          ...req.records,
+          website,
+        };
+        next();
+      },
+    }),
+    // 检查当前用户是否具有删除权限
+    (req, res, next) => {
+      const { id, roles } = req.user;
+
+      if (isAdmin(roles)) next();
+      else {
+        const website = req.records.website;
+        try {
+          if (website.creation.creator.id === id
+            || website.manager.id === id) next();
+          else res.status(403).send('没有删除权限');
+        } catch (err) {
+          error('website getOneCheck:', err.message);
+          res.status(500).send(err.message);
+        }
+      }
+    },
+    deleteById({ db }),
+    (req, res) => {
+      res.json({});
+    }
+  );
 
 
   return router;
