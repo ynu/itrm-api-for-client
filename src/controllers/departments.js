@@ -116,10 +116,10 @@ export default (options) => {
     currentUser({ db }),
     getById({
       db,
-      success: (dept, req, res, next) => {
+      success: (record, req, res, next) => {
         req.records = {
           ...req.records,
-          dept,
+          record,
         };
         next();
       },
@@ -130,11 +130,11 @@ export default (options) => {
 
       if (isAdmin(roles)) next();
       else {
-        const dept = req.records.dept;
+        const record = req.records.record;
         try {
-          if (dept.creation.creator.id === id
-            || dept.zyfzr.id === id
-            || dept.bmscy.id === id) next();
+          if (record.creation.creator.id === id
+            || record.zyfzr.id === id
+            || record.bmscy.id === id) next();
           else res.status(403).send('没有修改权限');
         } catch (err) {
           error('departments getOneCheck:', err.message);
@@ -149,10 +149,10 @@ export default (options) => {
     currentUser({ db }),
     getById({
       db,
-      success: (dept, req, res, next) => {
+      success: (record, req, res, next) => {
         req.records = {
           ...req.records,
-          dept,
+          record,
         };
         next();
       },
@@ -163,11 +163,11 @@ export default (options) => {
 
       if (isAdmin(roles)) next();
       else {
-        const dept = req.records.dept;
+        const record = req.records.record;
         try {
-          if (dept.creation.creator.id === id
-            || dept.zyfzr.id === id
-            || dept.bmscy.id === id) next();
+          if (record.creation.creator.id === id
+            || record.zyfzr.id === id
+            || record.bmscy.id === id) next();
           else res.status(403).send('没有删除权限');
         } catch (err) {
           error('departments getOneCheck:', err.message);

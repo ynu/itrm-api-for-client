@@ -133,13 +133,68 @@ export default (options) => {
   );
 
   router.put('/:id',
-    currentUser(),
+    currentUser({ db }),
+    getById({
+      db,
+      success: (record, req, res, next) => {
+        req.records = {
+          ...req.records,
+          record,
+        };
+        next();
+      },
+    }),
+    // 检查当前用户是否具有编辑权限
+    (req, res, next) => {
+      const { id, roles } = req.user;
+
+      if (isAdmin(roles)) next();
+      else {
+        const record = req.records.record;
+        try {
+          if (record.creation.creator.id === id) next();
+          else res.status(403).send('没有修改权限');
+        } catch (err) {
+          error('departments getOneCheck:', err.message);
+          res.status(500).send(err.message);
+        }
+      }
+    },
     updateById({ db }),
   );
 
   router.delete('/:id',
-    currentUser(),
+    currentUser({ db }),
+    getById({
+      db,
+      success: (record, req, res, next) => {
+        req.records = {
+          ...req.records,
+          record,
+        };
+        next();
+      },
+    }),
+    // 检查当前用户是否具有删除权限
+    (req, res, next) => {
+      const { id, roles } = req.user;
+
+      if (isAdmin(roles)) next();
+      else {
+        const record = req.records.record;
+        try {
+          if (record.creation.creator.id === id) next();
+          else res.status(403).send('没有删除权限');
+        } catch (err) {
+          error('aqzr getOneCheck:', err.message);
+          res.status(500).send(err.message);
+        }
+      }
+    },
     deleteById({ db }),
+    (req, res) => {
+      res.json({});
+    }
   );
 
 
