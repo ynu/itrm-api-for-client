@@ -1,5 +1,5 @@
 # Set the base image to nginx
-FROM node:8
+FROM node:8.1.2-alpine
 
 # File Author / Maintainer
 MAINTAINER Liudonghua <liudonghua123@gmail.com>
