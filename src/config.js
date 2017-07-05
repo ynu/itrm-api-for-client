@@ -27,6 +27,8 @@ export const casServiceUrl = process.env.CAS_SERVICE_URL || 'http://api.itrm.ynu
 
 export const hrHost = process.env.HR_HOST || 'http://ynu-hr-api.ynu.edu.cn';
 
+export const jwtToken = process.env.JWT_TOKEN || '';
+
 // 角色系统
 export const sysRoles = {
   admin: 'itrm:admin',  // 超级管理员
