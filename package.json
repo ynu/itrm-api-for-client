@@ -43,6 +43,7 @@
     "express": "^4.14.0",
     "express-jwt": "^5.1.0",
     "express-session": "^1.15.3",
+    "json-stringify-safe": "^5.0.1",
     "jszip": "^2.6.1",
     "mongo-use-collection": "^0.3.0",
     "mongodb": "^2.2.28",

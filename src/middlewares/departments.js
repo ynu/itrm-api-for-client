@@ -3,6 +3,7 @@ import { totalCount as totalCountCommon, list as listCommon,
   getById as getByIdCommon, updateById as updateByIdCommon,
   deleteById as deleteByIdCommon, insert as insertCommon } from './crud';
 import { isSupervisor, isAdmin, info, error } from '../config';
+import stringify from 'json-stringify-safe';
 
 const defaultOptions = {
   entityManger: DepartmentManger,
@@ -37,10 +38,15 @@ export const totalCount = (options = {}) => totalCountCommon({
   ...options,
 });
 
-export const list = (options = {}) => listCommon({
-  ...defaultOptions,
-  ...options,
-});
+export const list = (options = {}) => {
+  info(`defaultOptions: ${stringify(defaultOptions)}`)
+  info(`options: ${stringify(options)}`)
+  info(`merged options: ${stringify({...defaultOptions, ...options})}`)
+  return listCommon({
+    ...defaultOptions,
+    ...options,
+  });
+}
 
 export const getById = (options = {}) => getByIdCommon({
   ...defaultOptions,
