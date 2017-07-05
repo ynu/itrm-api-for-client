@@ -55,3 +55,5 @@ export const sysRoles = {
 export const isAdmin = roles => Array.isArray(roles) && roles.includes(sysRoles.admin);
 
 export const isSupervisor = roles => Array.isArray(roles) && (isAdmin(roles) || roles.includes(sysRoles.supervisor));
+
+export const jwtToken = process.env.JWT_TOKEN || '';
