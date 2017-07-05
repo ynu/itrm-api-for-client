@@ -53,7 +53,7 @@ export const deleteById = (options = {}) => deleteByIdCommon({
 
 export const collectData = (options = {}) => async (req, res, next) => {
   req.data = {};
-  req.data.department = req.departments.list[0];
+  req.data.department = req.department;
   req.data.websites = req.websites.list;
   req.data.weixins = req.wechatOfficialAccounts.list;
   req.data.weibos = req.weiboAccounts.list;

@@ -85,31 +85,69 @@ export default (options) => {
       };
       next();
     },
+    getById({
+      db,
+      success: (data, req, res, next) => {
+        req.aqzr = data;
+        next();
+      },
+    }),
     listDepartment({
       db,
-      getFilter: req => ({
-        $or: [
-            { 'creation.creator.id': req.user.id },
-            { 'zyfzr.id': req.user.id },
-            { 'bmscy.id': req.user.id },
-        ],
+      getQueryOptions: (req, res) => ({
+        query: {"dept.id":req.aqzr.dept.id},
+        skip: 0,
+        limit: 100,
       }),
+      success: (data, req, res, next) => {
+        req.departments = data;
+        req.department = data[0];
+        next();
+      },
     }),
     listWebsite({
       db,
       getFilter: req => req.queryFilter,
+      getQueryOptions: (req, res) => {
+        return {
+          query: {"dept.id": req.department.dept.id},
+          skip: 0,
+          limit: 100,
+        }
+      },
     }),
     listWechat({
       db,
       getFilter: req => req.queryFilter,
+      getQueryOptions: (req, res) => {
+        return {
+          query: {"dept.id": req.department.dept.id},
+          skip: 0,
+          limit: 100,
+        }
+      },
     }),
     listWeibo({
       db,
       getFilter: req => req.queryFilter,
+      getQueryOptions: (req, res) => {
+        return {
+          query: {"dept.id": req.department.dept.id},
+          skip: 0,
+          limit: 100,
+        }
+      },
     }),
     listEmail({
       db,
       getFilter: req => req.queryFilter,
+      getQueryOptions: (req, res) => {
+        return {
+          query: {"dept.id": req.department.dept.id},
+          skip: 0,
+          limit: 100,
+        }
+      },
     }),
     collectData(),
     // 可以使用{ data: sampleData }测试
