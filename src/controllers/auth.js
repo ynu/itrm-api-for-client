@@ -6,8 +6,10 @@ import { Router } from 'express';
 import cas from 'connect-cas';
 import url from 'url';
 import { webCallbackUrl, casServiceUrl } from '../config';
+import UirManager from '../models/users-in-roles';
 
-export default () => {
+export default (options) => {
+  const { db } = options;
   const router = new Router();
 
   // cas.ssout                    : handle logout requests directly from the CAS server
@@ -56,7 +58,20 @@ export default () => {
     if (req.session.cas && req.session.cas.user) {
       user = req.session.cas.user;
     }
-    res.json({ username: user });
+
+    // 获取用户角色
+    let roles = [];
+    if (user) {
+      const uirm = new UirManager(db);
+      const uir = await uirm.getUser('ynu_cas', user);
+      roles = uir.roles;
+    }
+
+    res.json({
+      username: user,
+      id: user,
+      roles,
+    });
   });
 
 

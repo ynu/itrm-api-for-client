@@ -247,3 +247,4 @@ ITRM API for Client with cookie authentication
 - 完成各个资源的读取权限控制;
 - 完成多角色单元测试;
 - dashboard显示根据部门进行统计的结果；
+- 获取用户信息时可获取角色
