@@ -236,6 +236,13 @@ ITRM API for Client with cookie authentication
 
 
 
+## 审核流程
+
+所有资源都设置了统一的审核流程。整个流程包括以下状态：
+- CREATED 资源被创建，或处于使用单位修改状态；
+- SYDW_APPROVED 使用单位已审核通过；
+- ITC_APPROVED ITC已审核通过；
+- ITC_REJECTED ITC已审核并驳回。
 
 ## CHANGELOG
 
@@ -248,3 +255,5 @@ ITRM API for Client with cookie authentication
 - 完成多角色单元测试;
 - dashboard显示根据部门进行统计的结果；
 - 获取用户信息时可获取角色
+- websites: 无需用户输入domain,自动从mainPageUrl中获取
+- departments: 增加审核流程功能
