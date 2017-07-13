@@ -102,7 +102,7 @@ export const getById = (options = {}) => async (req, res, next) => {
 
 export const updateById = (options = {}) => async (req, res, next) => {
   const getId = options.getId || (req2 => (new ObjectId(req2.params.id)));
-  const getUpdateExpression = options.getUpdateQuery || (req2 => req2.body);
+  const getUpdateExpression = options.getUpdateExpression || (req2 => req2.body);
   const success = options.success || ((id, req2, res2) => {
     res2.json({ id });
   });
@@ -123,6 +123,28 @@ export const updateById = (options = {}) => async (req, res, next) => {
   }
 };
 
+export const update = (options = {}) => async (req, res, next) => {
+  const getQuery = options.getQuery || (req2 => ({
+    _id: new ObjectId(req2.params.id),
+  }));
+  const getUpdateExpression = options.getUpdateExpression || (req2 => ({
+    $set: req2.body,
+  }));
+  const success = options.success || ((result, req2, res2, next2) => next2());
+  const fail = options.fail || ((err, req2, res2) => {
+    res2.status(403).send('当前用户没有权限');
+  });
+  const rm = getManager(options);
+  try {
+    const query = getQuery(req);
+    const updateExpression = getUpdateExpression(req, res);
+    const result = await rm.update(query, updateExpression);
+    success(result, req, res, next);
+  } catch (err) {
+    fail(err, req, res, next);
+  }
+};
+
 export const deleteById = (options = {}) => async (req, res, next) => {
   const getId = options.getId || (req2 => (new ObjectId(req2.params.id)));
   const success = options.success || ((id, req2, res2, next2) => {
@@ -138,6 +160,46 @@ export const deleteById = (options = {}) => async (req, res, next) => {
   const id = getId(req);
   try {
     await deptm.removeById(id);
+    success(id, req, res, next);
+  } catch (err) {
+    fail(err, req, res, next);
+  }
+};
+
+export const approve = (options = {}) => async (req, res, next) => {
+  const getId = options.getId || (req2 => (new ObjectId(req2.params.id)));
+  const getApprovedData = options.getApprovedData || (req2 => req2.body);
+  const success = options.success || ((id, req2, res2) => {
+    res2.json({ id });
+  });
+  const fail = options.fail || ((err, req2, res2) => {
+    res2.status(403).send('当前用户没有权限');
+  });
+  const rm = getManager(options);
+  try {
+    const id = getId(req);
+    const approvedData = getApprovedData(req, res);
+    await rm.addAuditLog(id, approvedData);
+    success(id, req, res, next);
+  } catch (err) {
+    fail(err, req, res, next);
+  }
+};
+
+export const addAuditLog = (options = {}) => async (req, res, next) => {
+  const getId = options.getId || (req2 => (new ObjectId(req2.params.id)));
+  const getAuditLog = options.getAuditLog || (req2 => req2.body);
+  const success = options.success || ((id, req2, res2) => {
+    res2.json({ id });
+  });
+  const fail = options.fail || ((err, req2, res2) => {
+    res2.status(403).send('当前用户没有权限');
+  });
+  const rm = getManager(options);
+  try {
+    const id = getId(req);
+    const auditLog = getAuditLog(req, res);
+    await rm.addAuditLog(id, auditLog);
     success(id, req, res, next);
   } catch (err) {
     fail(err, req, res, next);
@@ -180,4 +242,5 @@ export const insert = (options = {}) => async (req, res, next) => {
 export default {
   totalCount,
   list,
+  update,
 };

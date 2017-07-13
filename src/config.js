@@ -54,6 +54,26 @@ export const sysRoles = {
 
 export const isAdmin = roles => Array.isArray(roles) && roles.includes(sysRoles.admin);
 
-export const isSupervisor = roles => Array.isArray(roles) && (isAdmin(roles) || roles.includes(sysRoles.supervisor));
+export const isSupervisor = roles =>
+  Array.isArray(roles) && (isAdmin(roles) || roles.includes(sysRoles.supervisor));
 
 export const jwtToken = process.env.JWT_TOKEN || '';
+
+export const auditStatus = {
+  CREATED: 0, // 刚刚创建
+  SYDW_APPROVED: 1, // 使用单位审核通过
+  ITC_APPROVED: 101, // 信息技术中心已审核，通过
+  ITC_REJECTED: 102, // 信息技术中心已审核，驳回
+  isCreated: record => (
+    !record.latestAuditLog
+    || record.latestAuditLog.status === auditStatus.CREATED
+  ),
+  isSydwApproved: record => (
+    record.latestAuditLog
+    && record.latestAuditLog.status === auditStatus.SYDW_APPROVED
+  ),
+  isItcApproved: record => (
+    record.latestAuditLog
+    && record.latestAuditLog.status === auditStatus.ITC_APPROVED
+  ),
+};

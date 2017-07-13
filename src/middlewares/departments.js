@@ -1,9 +1,8 @@
 import DepartmentManger from '../models/departments';
 import { totalCount as totalCountCommon, list as listCommon,
   getById as getByIdCommon, updateById as updateByIdCommon,
-  deleteById as deleteByIdCommon, insert as insertCommon } from './crud';
-import { isSupervisor, isAdmin, info, error } from '../config';
-import stringify from 'json-stringify-safe';
+  deleteById as deleteByIdCommon, insert as insertCommon, approve as approveCommon, addAuditLog as addAuditLogCommon } from './crud';
+import { isSupervisor, info } from '../config';
 
 const defaultOptions = {
   entityManger: DepartmentManger,
@@ -38,15 +37,10 @@ export const totalCount = (options = {}) => totalCountCommon({
   ...options,
 });
 
-export const list = (options = {}) => {
-  info(`defaultOptions: ${stringify(defaultOptions)}`)
-  info(`options: ${stringify(options)}`)
-  info(`merged options: ${stringify({...defaultOptions, ...options})}`)
-  return listCommon({
-    ...defaultOptions,
-    ...options,
-  });
-}
+export const list = (options = {}) => listCommon({
+  ...defaultOptions,
+  ...options,
+});
 
 export const getById = (options = {}) => getByIdCommon({
   ...defaultOptions,
@@ -68,6 +62,16 @@ export const insert = (options = {}) => insertCommon({
   ...options,
 });
 
+export const approve = (options = {}) => approveCommon({
+  ...defaultOptions,
+  ...options,
+});
+
+export const addAuditLog = (options = {}) => addAuditLogCommon({
+  ...defaultOptions,
+  ...options,
+});
+
 export default {
   totalCount,
   list,
@@ -76,4 +80,6 @@ export default {
   deleteById,
   insert,
   listFilter,
+  approve,
+  addAuditLog,
 };
