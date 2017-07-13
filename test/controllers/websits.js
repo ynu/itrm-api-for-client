@@ -31,19 +31,16 @@ const controller = 'websites';
   [
     {
       dept: { id: '1001' },
-      zyfzr: user,
-      bmscy: { id: '101' },
       manager: { id: '102' },
+      mainPageUrl: 'http://www.yd.ynu.edu.cn/sdf.tm',
     }, {
       dept: { id: '1001' },
-      zyfzr: { id: '101' },
-      bmscy: user,
-      manager: { id: '102' },
+      manager: { id: '101' },
+      mainPageUrl: 'https://www.yd.ynu.edu.cn/sdf.tm',
     }, {
       dept: { id: '1001' },
-      zyfzr: { id: '101' },
-      bmscy: { id: '102' },
-      manager: user,
+      manager: { id: '101' },
+      mainPageUrl: 'http://www.yd.cn/sdf.tm',
     },
   ].map(dept => it('POST 添加数据', (done) => {
     agent.post(`/${controller}`).send(dept).then((res) => {
@@ -56,24 +53,29 @@ const controller = 'websites';
   }));
 
   it('GET 获取列表，仅能获取自己具有权限的', (done) => {
-    agent.get(`/${controller}`).query({
-      sort: JSON.stringify(['id', 'ASC']),
-      range: JSON.stringify([0, 1]),
-    }).end((err, res) => {
-      expect(res).to.have.status(200);
-      const result = JSON.parse(res.text);
-      expect(result.length).is.eql(2);
-      expect(res).to.have.header('Content-Range', `${controller} 0-1/3`);
-      done();
-    });
+    agent.get(`/${controller}`)
+      // 设置为仅获取前两条记录
+      .query({
+        sort: JSON.stringify(['id', 'ASC']),
+        range: JSON.stringify([0, 1]),
+      }).end((err, res) => {
+
+        // 请求能够正确执行
+        expect(res).to.have.status(200);
+        const result = JSON.parse(res.text);
+
+        // 返回的列表长度与查询参数相符
+        expect(result.length).is.eql(2);
+        expect(res).to.have.header('Content-Range', `${controller} 0-1/3`);
+        done();
+      });
   });
 
   it('PUT 修改数据', async () => {
     const res = await agent.put(`/${controller}/${newIds[0]}`).send({
       dept: { id: '1002' },
-      zyfzr: { id: '101' },
-      bmscy: { id: '102' },
       manager: user,
+      mainPageUrl: 'http://test.ynu.edu.cn/sdf.tm',
     });
     expect(res).to.have.status(200);
     const result = JSON.parse(res.text);
@@ -83,7 +85,12 @@ const controller = 'websites';
     const res = await agent.get(`/${controller}/${newIds[0]}`);
     expect(res).to.have.status(200);
     const result = JSON.parse(res.text);
+
+    // 数据已被修改
     expect(result.dept.id).is.eql('1002');
+
+    // 在服务器生成的字段应当正确
+    expect(result.domain).is.eql('test.ynu.edu.cn');
   });
 
   it('DELETE 删除数据', (done) => {
@@ -147,19 +154,16 @@ describe(`Supervisor - ${controller} controller`, () => {
     newIds = await Promise.all([
       {
         dept: { id: '1001' },
-        zyfzr: { id: '101' },
-        bmscy: { id: '101' },
         manager: { id: '102' },
+        mainPageUrl: 'http://www.yd.ynu.edu.cn/sdf.tm',
       }, {
         dept: { id: '1001' },
-        zyfzr: { id: '101' },
-        bmscy: { id: '102' },
         manager: { id: '101' },
+        mainPageUrl: 'https://www.yd.ynu.edu.cn/sdf.tm',
       }, {
         dept: { id: '1001' },
-        zyfzr: { id: '101' },
-        bmscy: { id: '102' },
         manager: { id: '101' },
+        mainPageUrl: 'http://www.yd.cn/sdf.tm',
       },
     ].map(async (dept) => {
       const res = await generalUserAgent.post(`/${controller}`).send(dept);
@@ -242,19 +246,16 @@ describe(`Admin - ${controller} controller`, () => {
     newIds = await Promise.all([
       {
         dept: { id: '1001' },
-        zyfzr: { id: '101' },
-        bmscy: { id: '101' },
         manager: { id: '102' },
+        mainPageUrl: 'http://www.yd.ynu.edu.cn/sdf.tm',
       }, {
         dept: { id: '1001' },
-        zyfzr: { id: '101' },
-        bmscy: { id: '102' },
         manager: { id: '101' },
+        mainPageUrl: 'https://www.yd.ynu.edu.cn/sdf.tm',
       }, {
         dept: { id: '1001' },
-        zyfzr: { id: '101' },
-        bmscy: { id: '102' },
         manager: { id: '101' },
+        mainPageUrl: 'http://www.yd.cn/sdf.tm',
       },
     ].map(async (dept) => {
       const res = await generalUserAgent.post(`/${controller}`).send(dept);
@@ -289,8 +290,7 @@ describe(`Admin - ${controller} controller`, () => {
   it('PUT 修改数据', async () => {
     const res = await agent.put(`/${controller}/${newIds[0]}`).send({
       dept: { id: '1002' },
-      zyfzr: { id: '101' },
-      bmscy: { id: '102' },
+      mainPageUrl: 'http://www.yd.ynu.edu.cn/sdf.tm',
       manager: { admin },
     });
     expect(res).to.have.status(200);

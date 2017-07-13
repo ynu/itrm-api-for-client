@@ -7,6 +7,7 @@ import cas from 'connect-cas';
 import url from 'url';
 import { webCallbackUrl, casServiceUrl } from '../config';
 import UirManager from '../models/users-in-roles';
+import JzgManager from '../models/jzg';
 
 export default (options) => {
   const { db } = options;
@@ -53,26 +54,38 @@ export default (options) => {
         `);
   });
 
-  router.get('/user', async (req, res) => {
-    let user = null;
-    if (req.session.cas && req.session.cas.user) {
-      user = req.session.cas.user;
-    }
+  router.get('/user',
+    async (req, res) => {
+      let user = null;
+      if (req.session.cas && req.session.cas.user) {
+        user = req.session.cas.user;
+      }
 
-    // 获取用户角色
-    let roles = [];
-    if (user) {
-      const uirm = new UirManager(db);
-      const uir = await uirm.getUser('ynu_cas', user);
-      roles = uir.roles;
-    }
+      // 获取用户角色
+      let roles = [];
+      if (user) {
+        const uirm = new UirManager(db);
+        const uir = await uirm.getUser('ynu_cas', user);
+        roles = uir.roles;
+      }
 
-    res.json({
-      username: user,
-      id: user,
-      roles,
-    });
-  });
+      // 获取教职工信息
+      let name;
+      if (user) {
+        const jzgm = new JzgManager();
+        const jzg = await jzgm.getById(user);
+        name = jzg.xm;
+      }
+
+
+      res.json({
+        username: user,
+        id: user,
+        name,
+        roles,
+      });
+    }
+  );
 
 
   return router;

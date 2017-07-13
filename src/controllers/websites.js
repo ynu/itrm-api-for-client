@@ -3,7 +3,7 @@
 */
 
 import { Router } from 'express';
-// import { secret } from '../config';
+import { URL } from 'url';
 import { formatQuery, setContentRange } from '../middlewares/simple-rest';
 import { list, totalCount, listFilter, getById, updateById, deleteById, insert } from '../middlewares/websites';
 import { resources, changeLogTypes, info, error, isAdmin } from '../config';
@@ -13,6 +13,17 @@ import { generateCreation } from '../middlewares/creation';
 import { currentUser } from '../middlewares/auth';
 import { insert as insertChangeLog } from '../middlewares/changelogs';
 import { list as zzjgList } from '../middlewares/zzjg';
+
+// 根据输入的参数mainPageUrl获取域名domain
+const getDomain = (req, res, next) => {
+  if (!req.body.mainPageUrl) {
+    res.status(500).send('必须提供参数：mainPageUrl');
+    return;
+  }
+  const mainPageUrl = new URL(req.body.mainPageUrl);
+  req.body.domain = mainPageUrl.host;
+  next();
+};
 
 export default (options) => {
   const { db, routeName } = options;
@@ -76,6 +87,9 @@ export default (options) => {
 
     // 创建Creation信息
     generateCreation(),
+
+    // 根据mainPageUrl生成domian
+    getDomain,
 
     // 获取组织机构列表
     zzjgList(),
@@ -146,6 +160,10 @@ export default (options) => {
         }
       }
     },
+
+    // 根据mainPageUrl生成domian
+    getDomain,
+
     updateById({ db }),
   );
 
