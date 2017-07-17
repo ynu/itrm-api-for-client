@@ -152,6 +152,22 @@ export default (options) => {
       db,
       success: (id, req, res, next) => next(),
     }),
+    // 插入修改日志信息
+    insertChangeLog({
+      db,
+      getData: req => ({
+        date: new Date(),
+        operator: {
+          id: req.user.id,
+        },
+        resource: {
+          category: resources.DEPARTMENTS,
+          id: req.params.id,
+        },
+        note: '修改记录',
+        type: changeLogTypes.UPDATE,
+      }),
+    }),
     (req, res, next) => {
       if (auditStatus.isCreated(req.records.record)) res.json({ id: req.params.id });
       else next();
