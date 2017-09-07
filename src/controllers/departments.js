@@ -8,7 +8,8 @@ import { formatQuery, setContentRange } from '../middlewares/simple-rest';
 import DepartmentManager from '../models/departments';
 import { generateCreation } from '../middlewares/creation';
 import { currentUser } from '../middlewares/auth';
-import { list, totalCount, getById, updateById, deleteById, insert, listFilter, addAuditLog } from '../middlewares/departments';
+import { list, totalCount, getById, updateById, deleteById, insert, listFilter } from '../middlewares/departments';
+import { addAuditLog } from '../middlewares/resources';
 import { insert as insertChangeLog } from '../middlewares/changelogs';
 import { list as zzjgList } from '../middlewares/zzjg';
 
@@ -173,7 +174,7 @@ export default (options) => {
       else next();
     },
     addAuditLog({
-      db,
+      manager: deptm,
       getAuditLog: req => ({
         auditor: {
           id: req.user.id,
@@ -185,6 +186,7 @@ export default (options) => {
     (req, res) => res.json({ id: req.params.id }),
   );
 
+  // 提交审核
   router.put('/commit/:id',
     currentUser({ db }),
     getById({
@@ -220,7 +222,7 @@ export default (options) => {
       }
     },
     addAuditLog({
-      db,
+      manager: deptm,
       getAuditLog: req => ({
         auditor: {
           id: req.user.id,
@@ -232,6 +234,7 @@ export default (options) => {
     (req, res) => res.json({ id: req.params.id }),
   );
 
+  // 撤回
   router.put('/withdraw/:id',
     currentUser({ db }),
     getById({ db }),
@@ -258,7 +261,7 @@ export default (options) => {
       }
     },
     addAuditLog({
-      db,
+      manager: deptm,
       getAuditLog: req => ({
         auditor: {
           id: req.user.id,
@@ -296,7 +299,7 @@ export default (options) => {
       }
     },
     addAuditLog({
-      db,
+      manager: deptm,
       getAuditLog: req => ({
         auditor: {
           id: req.user.id,
@@ -343,7 +346,7 @@ export default (options) => {
       }
     },
     addAuditLog({
-      db,
+      manager: deptm,
       getAuditLog: req => ({
         auditor: {
           id: req.user.id,
