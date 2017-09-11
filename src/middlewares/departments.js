@@ -1,7 +1,7 @@
 import DepartmentManger from '../models/departments';
 import { totalCount as totalCountCommon, list as listCommon,
   getById as getByIdCommon, updateById as updateByIdCommon,
-  deleteById as deleteByIdCommon, insert as insertCommon, approve as approveCommon, addAuditLog as addAuditLogCommon } from './crud';
+  deleteById as deleteByIdCommon, insert as insertCommon } from './crud';
 import { isSupervisor, info } from '../config';
 
 const defaultOptions = {
@@ -62,15 +62,15 @@ export const insert = (options = {}) => insertCommon({
   ...options,
 });
 
-export const approve = (options = {}) => approveCommon({
-  ...defaultOptions,
-  ...options,
-});
+// export const approve = (options = {}) => approveCommon({
+//   ...defaultOptions,
+//   ...options,
+// });
 
-export const addAuditLog = (options = {}) => addAuditLogCommon({
-  ...defaultOptions,
-  ...options,
-});
+// export const addAuditLog = (options = {}) => addAuditLogCommon({
+//   ...defaultOptions,
+//   ...options,
+// });
 
 export default {
   totalCount,
@@ -80,6 +80,6 @@ export default {
   deleteById,
   insert,
   listFilter,
-  approve,
-  addAuditLog,
+  // approve,
+  // addAuditLog,
 };

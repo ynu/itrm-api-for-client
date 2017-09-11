@@ -55,6 +55,7 @@ export default (options) => {
     }
   );
 
+  // 获取数据
   router.get('/:id',
     currentUser({ db }),
     getById({ db }),
@@ -67,6 +68,7 @@ export default (options) => {
     }
   );
 
+  // 新建
   router.post('/',
     // 检查用户登录，未登录则返回
     currentUser(),
@@ -114,6 +116,7 @@ export default (options) => {
     }
   );
 
+  // 修改
   router.put('/:id',
     currentUser({ db }),
     getById({
@@ -175,6 +178,7 @@ export default (options) => {
     },
     addAuditLog({
       manager: deptm,
+      getResourceManager: () => deptm,
       getAuditLog: req => ({
         auditor: {
           id: req.user.id,
@@ -221,8 +225,10 @@ export default (options) => {
         }
       }
     },
+
     addAuditLog({
       manager: deptm,
+      getResourceManager: () => deptm,
       getAuditLog: req => ({
         auditor: {
           id: req.user.id,
@@ -262,6 +268,7 @@ export default (options) => {
     },
     addAuditLog({
       manager: deptm,
+      getResourceManager: () => deptm,
       getAuditLog: req => ({
         auditor: {
           id: req.user.id,
@@ -273,6 +280,7 @@ export default (options) => {
     (req, res) => res.json({ id: req.params.id }),
   );
 
+  // ITC通过审核
   router.put('/itc-approve/:id',
     currentUser({ db }),
     getById({ db }),
@@ -300,6 +308,7 @@ export default (options) => {
     },
     addAuditLog({
       manager: deptm,
+      getResourceManager: () => deptm,
       getAuditLog: req => ({
         auditor: {
           id: req.user.id,
@@ -311,6 +320,7 @@ export default (options) => {
     (req, res) => res.json({ id: req.params.id }),
   );
 
+  // ITC驳回
   router.put('/itc-reject/:id',
     currentUser({ db }),
     getById({ db }),
@@ -347,6 +357,7 @@ export default (options) => {
     },
     addAuditLog({
       manager: deptm,
+      getResourceManager: () => deptm,
       getAuditLog: req => ({
         auditor: {
           id: req.user.id,
@@ -359,6 +370,7 @@ export default (options) => {
     (req, res) => res.json({ id: req.params.id }),
   );
 
+  // 删除资源
   router.delete('/:id',
     currentUser({ db }),
     getById({

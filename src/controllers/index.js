@@ -10,6 +10,7 @@ import auth from './auth';
 import dashboard from './dashboard';
 import aqzr from './aqzr';
 import zzjg from './zzjg';
+import audit from './audit';
 
 export default {
   websites,
@@ -22,4 +23,5 @@ export default {
   dashboard,
   aqzr,
   zzjg,
+  audit,
 };

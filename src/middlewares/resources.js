@@ -31,6 +31,12 @@ options参数：
   - fail
 */
 export const addAuditLog = (options = {}) => async (req, res, next) => {
+  // 检查getResourceManager是否正确
+  if (!options.getResourceManager || typeof options.getResourceManager !== 'function') {
+    error('必须提供getResourceManager');
+    res.status(500).send('getById: 必须提供getResourceManager');
+    return;
+  }
   const getId = options.getId || (req2 => (new ObjectId(req2.params.id)));
   const getAuditLog = options.getAuditLog || (req2 => req2.body);
   const success = options.success || ((id, req2, res2) => {
@@ -39,12 +45,50 @@ export const addAuditLog = (options = {}) => async (req, res, next) => {
   const fail = options.fail || ((err, req2, res2) => {
     res2.status(403).send('当前用户没有权限');
   });
-  const rm = getManager(options);
+  const rm = options.getResourceManager(req);
   try {
     const id = getId(req);
     const auditLog = getAuditLog(req, res);
     await rm.addAuditLog(id, auditLog);
     success(id, req, res, next);
+  } catch (err) {
+    fail(err, req, res, next);
+  }
+};
+
+/*
+根据Id获取资源数据
+options参数：
+  - getId
+  - getResourceManager
+  - success
+  - fail
+返回值：
+  - 获取后的数据存放在：req.records.record 中
+*/
+export const getById = (options = {}) => async (req, res, next) => {
+  // 检查getResourceManager是否正确
+  if (!options.getResourceManager || typeof options.getResourceManager !== 'function') {
+    error('必须提供getResourceManager');
+    res.status(500).send('getById: 必须提供getResourceManager');
+    return;
+  }
+  const getId = options.getId || (req2 => new ObjectId(req2.params.id));
+  const success = options.success || ((data, req2, res2, next2) => {
+    req2.records = {
+      ...req2.records,
+      record: data,
+    };
+    next2();
+  });
+  const fail = options.fail || ((err, req2, res2) => {
+    res2.status(403).send('当前用户没有权限');
+  });
+  const entityManger = options.getResourceManager(req);
+  const id = getId(req);
+  try {
+    const data = await entityManger.findById(id);
+    success(data, req, res, next);
   } catch (err) {
     fail(err, req, res, next);
   }

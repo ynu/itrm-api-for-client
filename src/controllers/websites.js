@@ -6,7 +6,7 @@ import { Router } from 'express';
 import { URL } from 'url';
 import { formatQuery, setContentRange } from '../middlewares/simple-rest';
 import { list, totalCount, listFilter, getById, updateById, deleteById, insert } from '../middlewares/websites';
-import { resources, changeLogTypes, info, error, isAdmin } from '../config';
+import { resources, changeLogTypes, info, error, isAdmin, auditStatus } from '../config';
 
 import WebSiteManager from '../models/websites';
 import { generateCreation } from '../middlewares/creation';
@@ -131,6 +131,7 @@ export default (options) => {
     }
   );
 
+  // 编辑数据
   router.put('/:id',
     currentUser({ db }),
     getById({
@@ -143,16 +144,22 @@ export default (options) => {
         next();
       },
     }),
-    // 检查当前用户是否具有编辑权限
+    /*
+    检查当前用户是否具有编辑权限,必须满足条件：
+    1. 用户角色
+    2. 资源状态，不能是ITC_APPROVED状态
+    */
     (req, res, next) => {
       const { id, roles } = req.user;
 
-      if (isAdmin(roles)) next();
+      if (isAdmin(roles)) next(); // 管理员可以编辑
       else {
         const website = req.records.website;
         try {
-          if (website.creation.creator.id === id
-            || website.manager.id === id) next();
+          // 创建者或站点管理员可以编辑未提交的数据
+          if ((website.creation.creator.id === id
+            || website.manager.id === id)
+            && !auditStatus.isItcApproved(website)) next();
           else res.status(403).send('没有修改权限');
         } catch (err) {
           error('website getOneCheck:', err.message);
