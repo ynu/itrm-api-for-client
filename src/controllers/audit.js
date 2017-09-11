@@ -67,10 +67,15 @@ export default (options) => {
             break;
 
           case 'withdraw':
+            // 管理员可以进行所有资源的withdraw
+            if (isAdmin(roles)) {
+              next();
+              return;
+            }
             // 不同资源的withdraw条件不一样
             switch (resName) {
-              // department的withdraw条件是：1. 当前用户必须是资源创建者；2. 资源处在SYDW_APPROVED状态.
-              case 'department':
+              // departments的withdraw条件是：1. 当前用户必须是资源创建者；2. 资源处在SYDW_APPROVED状态.
+              case 'departments':
                 if (record.creation.creator.id === id && auditStatus.isSydwApproved(record)) {
                   next();
                 } else res.status(403).send('没有权限');
@@ -79,11 +84,32 @@ export default (options) => {
                 break;
             }
             break;
-          default:
+          case 'itc-approve':
+            /*
+              ITC进行批准时，应当满足下面条件：
+              1. 当前用户为管理员
+              2. 资源当前状态为：SYDW_APPROVED
+            */
+            if (isAdmin(roles) && auditStatus.isSydwApproved(record)) {
+              next();
+            } else res.status(403).send('没有权限');
             break;
+          case 'itc-reject':
+            /*
+              ITC进行驳回时，应当满足下面条件：
+              1. 当前用户为管理员
+              2. 资源当前状态为：SYDW_APPROVED 或 ITC_APPROVED
+            */
+            if (isAdmin(roles)
+              && (auditStatus.isSydwApproved(record) || auditStatus.isItcApproved(record))) {
+              next();
+            } else res.status(403).send('没有权限');
+            break;
+          default:
+            res.status(401).send(`未知的审核动作：${action}`);
         }
       } catch (err) {
-        error('departments getOneCheck:', err.message);
+        error('audit err:', err.message);
         res.status(500).send(err.message);
       }
     },
@@ -95,25 +121,31 @@ export default (options) => {
         return managers[resName];
       },
       getAuditLog: (req) => {
-        const { action } = req.params;
-        let status;
-        switch (action) {
-          case 'commit':
-            status = auditStatus.SYDW_APPROVED;
-            break;
-          case 'withdraw':
-            status = auditStatus.CREATED;
-            break;
-          default:
-            break;
-        }
-        return {
+        const auditLog = {
           auditor: {
             id: req.user.id,
             name: req.user.name,
           },
-          status,
         };
+        const { action } = req.params;
+        switch (action) {
+          case 'commit':
+            auditLog.status = auditStatus.SYDW_APPROVED;
+            break;
+          case 'withdraw':
+            auditLog.status = auditStatus.CREATED;
+            break;
+          case 'itc-approve':
+            auditLog.status = auditStatus.ITC_APPROVED;
+            break;
+          case 'itc-reject':
+            auditLog.status = auditStatus.ITC_REJECTED;
+            auditLog.remark = req.body.remark;
+            break;
+          default:
+            break;
+        }
+        return auditLog;
       },
     }),
     (req, res) => res.json({ id: req.params.id }),
