@@ -94,7 +94,7 @@ export default (options) => {
     // 获取组织机构列表
     zzjgList(),
 
-    // 插入部门信息
+    // 插入网站信息
     insert({
       manager: wsm,
       getData: (req) => {
@@ -103,7 +103,10 @@ export default (options) => {
         return {
           creation: req.creation,
           ...req.body,
-          name: zzjg.mc,
+          dept: {
+            ...req.body.dept,
+            name: zzjg.mc,
+          },
         };
       },
     }),
@@ -144,6 +147,7 @@ export default (options) => {
         next();
       },
     }),
+
     /*
     检查当前用户是否具有编辑权限,必须满足条件：
     1. 用户角色
@@ -171,7 +175,28 @@ export default (options) => {
     // 根据mainPageUrl生成domian
     getDomain,
 
-    updateById({ db }),
+    // 获取组织机构列表
+    zzjgList(),
+
+    updateById({
+      db,
+      getUpdateExpression: (req) => {
+        // 更新的时候同时更新dept字段的name等字段
+        const zzjg = req.zzjg.list.find(jg => req.body.dept.id === jg.dm);
+        req.body.dept = {
+          ...req.body.dept,
+          name: zzjg.mc,
+        };
+        return req.body;
+      },
+      success: (id, req, res) => {
+        // 操作成功后，最好的方式是返回整个对象的数据
+        res.json({
+          id,
+          ...req.body,
+        });
+      },
+    }),
   );
 
   router.delete('/:id',

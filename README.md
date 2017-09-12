@@ -257,3 +257,5 @@ ITRM API for Client with cookie authentication
 - 获取用户信息时可获取角色
 - websites: 无需用户输入domain,自动从mainPageUrl中获取
 - departments: 增加审核流程功能
+- 创建或编辑website时，自动补齐dept的数据
+- 编辑website后，返回全部数据

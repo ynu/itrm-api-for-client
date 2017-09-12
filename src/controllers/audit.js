@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { currentUser } from '../middlewares/auth';
 import { addAuditLog, getById } from '../middlewares/resources';
 import DepartmentManager from '../models/departments';
-import { resources, changeLogTypes, info, error, isAdmin, auditStatus } from '../config';
+import { error, isAdmin, auditStatus } from '../config';
 
 
 export default (options) => {
@@ -28,13 +28,6 @@ export default (options) => {
         const { resName } = req.params;
         return managers[resName];
       },
-      // success: (record, req, res, next) => {
-      //   req.records = {
-      //     ...req.records,
-      //     record,
-      //   };
-      //   next();
-      // },
     }),
     /*
       检查当前用户、当前数据是否具备审核条件。

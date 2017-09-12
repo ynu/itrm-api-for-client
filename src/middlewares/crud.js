@@ -168,27 +168,6 @@ export const deleteById = (options = {}) => async (req, res, next) => {
   }
 };
 
-// export const approve = (options = {}) => async (req, res, next) => {
-//   const getId = options.getId || (req2 => (new ObjectId(req2.params.id)));
-//   const getApprovedData = options.getApprovedData || (req2 => req2.body);
-//   const success = options.success || ((id, req2, res2) => {
-//     res2.json({ id });
-//   });
-//   const fail = options.fail || ((err, req2, res2) => {
-//     res2.status(403).send('当前用户没有权限');
-//   });
-//   const rm = getManager(options);
-//   try {
-//     const id = getId(req);
-//     const approvedData = getApprovedData(req, res);
-//     await rm.addAuditLog(id, approvedData);
-//     success(id, req, res, next);
-//   } catch (err) {
-//     fail(err, req, res, next);
-//   }
-// };
-
-
 export const insert = (options = {}) => async (req, res, next) => {
   const manager = getManager(options);
   const getData = options.getData || (req2 => req2.body);
@@ -203,23 +182,6 @@ export const insert = (options = {}) => async (req, res, next) => {
   const id = await manager.insert(data);
   success(id, req, res, next);
 };
-
-// export const countByDept = (options = {}) => async (req, res, next) => {
-//   const success = options.success || ((count, req2, res2, next2) => {
-//     req2.records = {
-//       countByDept: count,
-//     };
-//     next2();
-//   });
-//   const fail = options.fail || ((err, req2, res2) => {
-//     res2.status(500).send(err.message);
-//   });
-
-//   const manager = getManager(options);
-//   try {
-
-//   }
-// };
 
 export default {
   totalCount,
