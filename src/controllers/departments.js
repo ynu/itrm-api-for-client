@@ -22,6 +22,21 @@ export default (options) => {
   router.get('/',
     currentUser({ db }),
     formatQuery({
+      // 处理请求中的filter参数
+      handleFilter: (filterString) => {
+        try {
+          const filter = JSON.parse(filterString);
+
+          // List页面的过滤
+          if (filter.q) {
+            return {
+              name: new RegExp(filter.q, 'i'),
+            }
+          } return {};
+        } catch (err) {
+          return {};
+        }
+      },
       success: (queryOptions, req, res, next) => {
         info('departments list queryOptions:', queryOptions);
         req.queryOptions = queryOptions;

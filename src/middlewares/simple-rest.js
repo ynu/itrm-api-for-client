@@ -8,8 +8,11 @@ Simple REST 相关的中间件
 
 /*
 格式化 GET_LIST 请求发来的 query 参数，并作为 mongodb 可用的参数输出
+query参数包括：
+- range 例如：[0, 9]
+- sort 例如：["id","DESC"]
+- filter 例如：{"q":"text"}
 */
-
 export const formatQuery = (options = {}) => (req, res, next) => {
   const handleFilter = options.handleFilter || (() => ({}));
   const success = options.success || ((listOptions, req2, res2, next2) => {
