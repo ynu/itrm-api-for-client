@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { currentUser } from '../middlewares/auth';
 import { addAuditLog, getById } from '../middlewares/resources';
 import DepartmentManager from '../models/departments';
+import WebsiteManager from '../models/websites';
 import { error, isAdmin, auditStatus } from '../config';
 
 
@@ -9,6 +10,7 @@ export default (options) => {
   const { db } = options;
   const managers = {
     departments: new DepartmentManager(db),
+    websites: new WebsiteManager(db),
   };
 
   const router = new Router();
@@ -54,6 +56,13 @@ export default (options) => {
                   next();
                 } else res.status(403).send('没有权限');
                 break;
+              case 'websites':
+                // 创建者或管理员可以提交审核
+                if ((record.creation.creator.id === id || record.manager.id === id)
+                  && auditStatus.isCreated(record)) {
+                  next();
+                } else res.status(403).send('没有权限');
+                break;
               default:
                 break;
             }
@@ -70,6 +79,13 @@ export default (options) => {
               // departments的withdraw条件是：1. 当前用户必须是资源创建者；2. 资源处在SYDW_APPROVED状态.
               case 'departments':
                 if (record.creation.creator.id === id && auditStatus.isSydwApproved(record)) {
+                  next();
+                } else res.status(403).send('没有权限');
+                break;
+              case 'websites':
+                // 创建者或管理员可以撤回审核
+                if ((record.creation.creator.id === id || record.manager.id === id)
+                  && auditStatus.isCreated(record)) {
                   next();
                 } else res.status(403).send('没有权限');
                 break;

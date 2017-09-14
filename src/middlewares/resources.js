@@ -43,7 +43,8 @@ export const addAuditLog = (options = {}) => async (req, res, next) => {
     res2.json({ id });
   });
   const fail = options.fail || ((err, req2, res2) => {
-    res2.status(403).send('当前用户没有权限');
+    error('addAuditLog Error: ', err.message);
+    res2.status(500).send('服务器错误');
   });
   const rm = options.getResourceManager(req);
   try {
