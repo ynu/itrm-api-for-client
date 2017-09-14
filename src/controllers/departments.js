@@ -26,13 +26,16 @@ export default (options) => {
       handleFilter: (filterString) => {
         try {
           const filter = JSON.parse(filterString);
-
-          // List页面的过滤
+          const query = {};
+          // List页面的搜索过滤
           if (filter.q) {
-            return {
-              name: new RegExp(filter.q, 'i'),
-            }
-          } return {};
+            query.name = new RegExp(filter.q, 'i');
+          }
+          // List根据最终状态过滤
+          if (filter.status >= 0) {
+            query['latestAuditLog.status'] = filter.latestAuditLog.status;
+          }
+          return query;
         } catch (err) {
           return {};
         }
