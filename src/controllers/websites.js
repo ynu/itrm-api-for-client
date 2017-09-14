@@ -34,6 +34,27 @@ export default (options) => {
   router.get('/',
     currentUser({ db }),
     formatQuery({
+      // 处理请求中的filter参数
+      handleFilter: (filterString) => {
+        try {
+          const filter = JSON.parse(filterString);
+          const query = {};
+          // List页面的搜索过滤，根据name和domian检索
+          if (filter.q) {
+            query.$or = [
+              { name: new RegExp(filter.q, 'i') },
+              { domain: new RegExp(filter.q, 'i') },
+            ];
+          }
+          // List根据最终状态过滤
+          if (filter.status >= 0) {
+            query['latestAuditLog.status'] = filter.latestAuditLog.status;
+          }
+          return query;
+        } catch (err) {
+          return {};
+        }
+      },
       success: (queryOptions, req, res, next) => {
         info('websites list queryOptions:', queryOptions);
         req.queryOptions = queryOptions;
